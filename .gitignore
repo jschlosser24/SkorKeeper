@@ -1,0 +1,6 @@
+# IDE - IntelliJ / Android Studio
+.idea/caches/
+.idea/deviceManager.xml
+
+# IDE - VS Code
+.vscode/

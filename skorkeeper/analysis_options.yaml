@@ -1,0 +1,16 @@
+﻿include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - '**/*.g.dart'
+    - '**/*.freezed.dart'
+  errors:
+    lines_longer_than_80_chars: warning
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    avoid_print: true
+    use_key_in_widget_constructors: true
+    prefer_interpolation_to_compose_strings: false
+

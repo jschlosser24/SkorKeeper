@@ -26,9 +26,16 @@ class _YahtzeeSetupScreenState extends ConsumerState<YahtzeeSetupScreen> {
             .valueOrNull
             ?.defaultPlayerNames ??
         const <String>[];
+    final colors =
+        ref
+            .watch(preferencesNotifierProvider)
+            .valueOrNull
+            ?.defaultPlayerColors ??
+        const <String>[];
     return SessionSetupScaffold(
       module: const YahtzeeModule(),
       initialPlayerNames: names,
+      initialPlayerColors: colors,
       extraContent: _buildDiceModeToggle(context),
       onStartGame: (result) async {
         final initialState = YahtzeeState(

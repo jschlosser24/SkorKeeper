@@ -56,5 +56,16 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>SkorKeeper uses this to show you relevant ads. You can still use the app if you decline.</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-2153308244657091~7639528854</string>
+	<key>SKAdNetworkItems</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>cstr6suwn9.skadnetwork</string>
+		</dict>
+	</array>
 </dict>
 </plist>

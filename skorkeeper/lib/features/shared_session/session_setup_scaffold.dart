@@ -19,6 +19,7 @@ class SessionSetupScaffold extends StatefulWidget {
     required this.onStartGame,
     super.key,
     this.initialPlayerNames = const <String>[],
+    this.initialPlayerColors = const <String>[],
     this.appBarTitle,
     this.extraContent,
     this.sessionNameLabel = 'Session name (optional)',
@@ -30,6 +31,7 @@ class SessionSetupScaffold extends StatefulWidget {
   final GameModule module;
   final FutureOr<void> Function(SessionSetupResult result) onStartGame;
   final List<String> initialPlayerNames;
+  final List<String> initialPlayerColors;
   final String? appBarTitle;
   final Widget? extraContent;
   final String sessionNameLabel;
@@ -90,12 +92,15 @@ class _SessionSetupScaffoldState extends State<SessionSetupScaffold> {
     }
     final players = List<SessionPlayer>.generate(_playerCount, (index) {
       final name = _playerControllers[index].text.trim();
+      final colorHex = index < widget.initialPlayerColors.length
+          ? widget.initialPlayerColors[index]
+          : kDefaultPlayerColors[index % kDefaultPlayerColors.length];
       return SessionPlayer(
         id: 'player_' + index.toString(),
         displayName: name.isEmpty
             ? widget.participantSingularLabel + ' ' + (index + 1).toString()
             : name,
-        colorHex: kDefaultPlayerColors[index % kDefaultPlayerColors.length],
+        colorHex: colorHex,
         seatOrder: index,
       );
     });
@@ -159,8 +164,9 @@ class _SessionSetupScaffoldState extends State<SessionSetupScaffold> {
               children: [
                 PlayerChip(
                   displayName: _playerControllers[i].text,
-                  colorHex:
-                      kDefaultPlayerColors[i % kDefaultPlayerColors.length],
+                  colorHex: i < widget.initialPlayerColors.length
+                      ? widget.initialPlayerColors[i]
+                      : kDefaultPlayerColors[i % kDefaultPlayerColors.length],
                 ),
                 const SizedBox(width: 12),
                 Expanded(

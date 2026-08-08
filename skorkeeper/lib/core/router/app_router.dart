@@ -16,7 +16,9 @@ import '../../features/modules/golf/presentation/golf_setup_screen.dart';
 import '../../features/modules/uno/presentation/uno_setup_screen.dart';
 import '../../features/modules/yahtzee/presentation/yahtzee_setup_screen.dart';
 import '../../features/modules/cribbage/presentation/cribbage_setup_screen.dart';
+import '../../features/settings/faq_screen.dart';
 import '../../features/settings/settings_screen.dart';
+import '../../features/settings/theme_picker_screen.dart';
 import '../../features/settings/updates_screen.dart';
 import '../../features/shared_session/game_session_scaffold.dart';
 import '../../features/shared_session/session_setup_scaffold.dart';
@@ -221,9 +223,19 @@ GoRouter appRouter(Ref ref) {
                 builder: (context, state) => const SettingsScreen(),
                 routes: [
                   GoRoute(
+                    path: 'themes',
+                    pageBuilder: (context, state) =>
+                        _slideRightPage(state, const ThemePickerScreen()),
+                  ),
+                  GoRoute(
                     path: 'updates',
                     pageBuilder: (context, state) =>
                         _slideRightPage(state, const UpdatesScreen()),
+                  ),
+                  GoRoute(
+                    path: 'faq',
+                    pageBuilder: (context, state) =>
+                        _slideRightPage(state, const FaqScreen()),
                   ),
                 ],
               ),
@@ -329,9 +341,12 @@ class _SetupRouteScreen extends ConsumerWidget {
     final preferences = ref.watch(preferencesNotifierProvider);
     final names =
         preferences.valueOrNull?.defaultPlayerNames ?? const <String>[];
+    final colors =
+        preferences.valueOrNull?.defaultPlayerColors ?? const <String>[];
     return SessionSetupScaffold(
       module: module,
       initialPlayerNames: names,
+      initialPlayerColors: colors,
       onStartGame: (result) async {
         final sessionId = await ref
             .read(activeSessionsNotifierProvider.notifier)

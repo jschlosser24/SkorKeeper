@@ -3,7 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/models/session_player.dart';
+import '../../core/models/user_preferences.dart';
+import '../../core/monetization/app_theme_id.dart';
+import '../../core/monetization/monetized_banner.dart';
+import '../../core/monetization/sound_pack_catalog.dart';
+import '../../core/monetization/theme_catalog.dart';
 import '../../core/providers/preferences_provider.dart';
+import '../../core/providers/pro_state_provider.dart';
+import 'pro_purchase_sheet.dart';
+import 'tip_jar_sheet.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -24,12 +33,54 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final preferences = ref.watch(preferencesNotifierProvider);
+    final isPro = ref.watch(proStateNotifierProvider).valueOrNull ?? false;
     final notifier = ref.read(preferencesNotifierProvider.notifier);
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
+      bottomNavigationBar: const MonetizedBanner(),
       body: preferences.when(
         data: (prefs) => ListView(
           children: [
+            const _SectionHeader('SkorKeeper Pro'),
+            if (isPro)
+              ListTile(
+                leading: Icon(
+                  Icons.star,
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+                title: const Text('SkorKeeper Pro'),
+                subtitle: const Text(
+                  'Active — thank you for supporting SkorKeeper!',
+                ),
+                trailing: Icon(
+                  Icons.check_circle,
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+                onTap: () => showProPurchaseSheet(context),
+              )
+            else
+              ListTile(
+                leading: Icon(
+                  Icons.star_outline,
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+                title: const Text('SkorKeeper Pro'),
+                subtitle: const Text(
+                  'Ad-free · All themes · Unlimited history · \$3.99',
+                ),
+                trailing: FilledButton(
+                  onPressed: () => showProPurchaseSheet(context),
+                  child: const Text('Get Pro'),
+                ),
+              ),
+            const _SectionHeader('Support the Developer'),
+            ListTile(
+              leading: const Text('❤️', style: TextStyle(fontSize: 22)),
+              title: const Text('Tip Jar'),
+              subtitle: const Text('Enjoying SkorKeeper? Leave a tip!'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => showTipJarSheet(context),
+            ),
             const _SectionHeader('Appearance'),
             ListTile(
               title: const Text('Theme'),
@@ -48,12 +99,46 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     notifier.updateThemeMode(selection.first),
               ),
             ),
+            Builder(
+              builder: (context) {
+                final selectedId = prefs.selectedThemeId;
+                final themeId = AppThemeId.values.firstWhere(
+                  (e) => e.name == selectedId,
+                  orElse: () => AppThemeId.midnightWolves,
+                );
+                final themeDef =
+                    ThemeCatalog.findById(themeId) ?? ThemeCatalog.defaultTheme;
+                return ListTile(
+                  title: const Text('Color Theme'),
+                  subtitle: Text('${themeDef.emoji} ${themeDef.name}'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => context.push('/settings/themes'),
+                );
+              },
+            ),
             const _SectionHeader('Audio & Feedback'),
             SwitchListTile(
               title: const Text('Sound Effects'),
               value: prefs.soundEnabled,
               onChanged: (value) => notifier.updateSoundEnabled(value),
             ),
+            if (isPro)
+              Builder(
+                builder: (context) {
+                  final packId = notifier.currentSoundPackId;
+                  final pack = SoundPacks.findById(packId);
+                  return ListTile(
+                    leading: Text(
+                      pack.emoji,
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                    title: const Text('Sound Pack'),
+                    subtitle: Text(pack.name),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => _showSoundPackPicker(context, packId),
+                  );
+                },
+              ),
             SwitchListTile(
               title: const Text('Haptic Feedback'),
               value: prefs.hapticEnabled,
@@ -87,12 +172,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         labelText: 'Add player name',
                         border: OutlineInputBorder(),
                       ),
-                      onSubmitted: (_) => _addName(prefs.defaultPlayerNames),
+                      onSubmitted: (_) => _addName(prefs),
                     ),
                   ),
                   const SizedBox(width: 12),
                   FilledButton.icon(
-                    onPressed: () => _addName(prefs.defaultPlayerNames),
+                    onPressed: () => _addName(prefs),
                     icon: const Icon(Icons.add),
                     label: const Text('Add'),
                   ),
@@ -100,30 +185,49 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final name in prefs.defaultPlayerNames)
-                    InputChip(
-                      label: Text(name),
-                      onDeleted: () {
-                        final updated = [...prefs.defaultPlayerNames]
-                          ..remove(name);
-                        notifier.updateDefaultPlayerNames(updated);
-                      },
-                    ),
-                  if (prefs.defaultPlayerNames.isEmpty)
-                    const Text('No saved default players yet.'),
-                ],
+            if (prefs.defaultPlayerNames.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'No saved default players yet.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              )
+            else if (isPro)
+              _DefaultPlayerColorList(
+                names: prefs.defaultPlayerNames,
+                colors: prefs.defaultPlayerColors,
+                onChanged: (names, colors) =>
+                    notifier.updateDefaultPlayers(names, colors),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (var i = 0; i < prefs.defaultPlayerNames.length; i++)
+                      InputChip(
+                        label: Text(prefs.defaultPlayerNames[i]),
+                        onDeleted: () => _removeName(prefs, i),
+                      ),
+                  ],
+                ),
               ),
-            ),
 
             // ── FAQ ─────────────────────────────────────────────────────────
             const _SectionHeader('Frequently Asked Questions'),
-            const _FaqSection(),
+            ListTile(
+              leading: Icon(
+                Icons.help_outline,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              title: const Text('FAQ'),
+              subtitle: const Text('Common questions about games, Pro features, and more'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => context.push('/settings/faq'),
+            ),
 
             // ── Feedback ────────────────────────────────────────────────────
             const _SectionHeader('Feedback & Bug Reports'),
@@ -155,16 +259,87 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  void _addName(List<String> currentNames) {
+  void _addName(UserPreferences prefs) {
     final name = _playerNameController.text.trim();
-    if (name.isEmpty) {
-      return;
-    }
-    ref.read(preferencesNotifierProvider.notifier).updateDefaultPlayerNames([
-      ...currentNames,
-      name,
-    ]);
+    if (name.isEmpty) return;
+    final newNames = [...prefs.defaultPlayerNames, name];
+    final newColors = [
+      ...prefs.defaultPlayerColors,
+      kDefaultPlayerColors[prefs.defaultPlayerNames.length % kDefaultPlayerColors.length],
+    ];
+    ref.read(preferencesNotifierProvider.notifier).updateDefaultPlayers(newNames, newColors);
     _playerNameController.clear();
+  }
+
+  void _removeName(UserPreferences prefs, int index) {
+    final newNames = [...prefs.defaultPlayerNames]..removeAt(index);
+    final newColors = prefs.defaultPlayerColors.length > index
+        ? ([...prefs.defaultPlayerColors]..removeAt(index))
+        : [...prefs.defaultPlayerColors];
+    ref.read(preferencesNotifierProvider.notifier).updateDefaultPlayers(newNames, newColors);
+  }
+
+  Future<void> _showSoundPackPicker(BuildContext context, String current) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (_) => _SoundPackPickerSheet(
+        current: current,
+        onSelect: (id) {
+          ref.read(preferencesNotifierProvider.notifier).updateSoundPackId(id);
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+}
+
+// ── Sound pack picker sheet ───────────────────────────────────────────────────
+
+class _SoundPackPickerSheet extends StatelessWidget {
+  const _SoundPackPickerSheet({
+    required this.current,
+    required this.onSelect,
+  });
+
+  final String current;
+  final void Function(String id) onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Sound Pack',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Choose the sound effects style for your games.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+          ),
+          const SizedBox(height: 16),
+          for (final pack in SoundPacks.all)
+            ListTile(
+              leading: Text(pack.emoji, style: const TextStyle(fontSize: 22)),
+              title: Text(pack.name),
+              subtitle: Text(pack.description),
+              trailing: current == pack.id
+                  ? Icon(Icons.check_circle, color: cs.primary)
+                  : null,
+              onTap: () => onSelect(pack.id),
+            ),
+        ],
+      ),
+    );
   }
 }
 
@@ -185,110 +360,6 @@ class _SectionHeader extends StatelessWidget {
           color: Theme.of(context).colorScheme.primary,
         ),
       ),
-    );
-  }
-}
-
-// ── FAQ section ───────────────────────────────────────────────────────────────
-
-class _FaqSection extends StatefulWidget {
-  const _FaqSection();
-
-  @override
-  State<_FaqSection> createState() => _FaqSectionState();
-}
-
-class _FaqSectionState extends State<_FaqSection> {
-  static const _faqs = <({String question, String answer})>[
-    (
-      question: 'How do I start a new game?',
-      answer:
-          'From the Games tab, choose a game type or tap Custom Scoring to start a flexible session. Tap "Start Game" after configuring players.',
-    ),
-    (
-      question: 'How do I add more players?',
-      answer:
-          'On any game setup screen, tap the + button next to the player count. You can save default player names in Settings → Default Players.',
-    ),
-    (
-      question: 'How do I use Custom Scoring?',
-      answer:
-          'Custom Scoring lets you track any game. Set a game name, choose High Wins or Low Wins, add players, then tap cells to enter scores each round. Use "Add Round" to add more rounds.',
-    ),
-    (
-      question: 'How do I use the Tools?',
-      answer:
-          'The Tools tab gives you a dice roller, coin flip, spinner, timer, stopwatch, lives counter, tally counter, notepad, and team picker — all available offline.',
-    ),
-    (
-      question: 'How do I resume a game?',
-      answer:
-          'Active sessions are shown on the Games home screen. Tap the "Resume active session" card to continue where you left off.',
-    ),
-    (
-      question: 'How does Farkle scoring work?',
-      answer:
-          'Roll all 6 dice. Tap dice to hold scoring ones (1s = 100, 5s = 50, three of a kind = face × 100, three 1s = 1000). Roll remaining dice or bank your turn score. A roll with no scoring dice is a Farkle — you lose your turn score!',
-    ),
-    (
-      question: 'How does Cricket (Darts) work?',
-      answer:
-          'Close targets 15-20 and Bull by hitting each 3 times (/, X, ⊗). After closing a target, additional hits score points — until all players close it. First player to close all targets with equal or more points wins.',
-    ),
-    (
-      question: 'Can I change the theme?',
-      answer:
-          'Yes! Go to Settings → Appearance → Theme and choose Auto (follows system), Light, or Dark.',
-    ),
-    (
-      question: 'Does the app work offline?',
-      answer:
-          'Yes — SkorKeeper is fully offline. All data is stored locally on your device.',
-    ),
-  ];
-
-  final Set<int> _expanded = {};
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (var i = 0; i < _faqs.length; i++)
-          Theme(
-            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-            child: ExpansionTile(
-              initiallyExpanded: _expanded.contains(i),
-              onExpansionChanged: (val) {
-                setState(() {
-                  if (val) {
-                    _expanded.add(i);
-                  } else {
-                    _expanded.remove(i);
-                  }
-                });
-              },
-              leading: Icon(
-                Icons.help_outline,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              title: Text(
-                _faqs[i].question,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
-              ),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                  child: Text(
-                    _faqs[i].answer,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ),
-              ],
-            ),
-          ),
-      ],
     );
   }
 }
@@ -451,3 +522,179 @@ class _FeedbackSectionState extends State<_FeedbackSection> {
 }
 
 enum _FeedbackType { general, bug, feature }
+
+// ── Default player color list (Pro) ──────────────────────────────────────────
+
+class _DefaultPlayerColorList extends StatelessWidget {
+  const _DefaultPlayerColorList({
+    required this.names,
+    required this.colors,
+    required this.onChanged,
+  });
+
+  final List<String> names;
+  final List<String> colors;
+  final void Function(List<String> names, List<String> colors) onChanged;
+
+  String _colorFor(int index) {
+    if (index < colors.length) return colors[index];
+    return kDefaultPlayerColors[index % kDefaultPlayerColors.length];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          for (var i = 0; i < names.length; i++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => _pickColor(context, i),
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: _hexToColor(_colorFor(i)),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.outline,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.colorize,
+                        size: 14,
+                        color: _contrastColor(_hexToColor(_colorFor(i))),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      names[i],
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 18),
+                    onPressed: () {
+                      final newNames = [...names]..removeAt(i);
+                      final newColors = List<String>.generate(
+                        names.length,
+                        (j) => _colorFor(j),
+                      )..removeAt(i);
+                      onChanged(newNames, newColors);
+                    },
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickColor(BuildContext context, int index) async {
+    final picked = await showModalBottomSheet<String>(
+      context: context,
+      builder: (_) => _ColorPickerSheet(current: _colorFor(index)),
+    );
+    if (picked == null) return;
+    final newColors = List<String>.generate(names.length, (j) => _colorFor(j));
+    newColors[index] = picked;
+    onChanged(names, newColors);
+  }
+
+  static Color _hexToColor(String hex) {
+    final clean = hex.replaceFirst('#', '');
+    return Color(int.parse('FF$clean', radix: 16));
+  }
+
+  static Color _contrastColor(Color bg) {
+    final luminance = bg.computeLuminance();
+    return luminance > 0.4 ? Colors.black87 : Colors.white;
+  }
+}
+
+class _ColorPickerSheet extends StatelessWidget {
+  const _ColorPickerSheet({required this.current});
+
+  final String current;
+
+  static const _extraColors = [
+    '#E91E63', '#9C27B0', '#3F51B5', '#2196F3', '#00BCD4',
+    '#009688', '#4CAF50', '#CDDC39', '#FF9800', '#795548',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final allColors = [...kDefaultPlayerColors, ..._extraColors];
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Choose Color',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              for (final hex in allColors)
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pop(hex),
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: _hexToColor(hex),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: hex == current
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.transparent,
+                        width: 3,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.15),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: hex == current
+                        ? Icon(
+                            Icons.check,
+                            size: 20,
+                            color: _contrastColor(_hexToColor(hex)),
+                          )
+                        : null,
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Color _hexToColor(String hex) {
+    final clean = hex.replaceFirst('#', '');
+    return Color(int.parse('FF$clean', radix: 16));
+  }
+
+  static Color _contrastColor(Color bg) {
+    return bg.computeLuminance() > 0.4 ? Colors.black87 : Colors.white;
+  }
+}

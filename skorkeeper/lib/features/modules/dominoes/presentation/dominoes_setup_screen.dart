@@ -18,10 +18,17 @@ class DominoesSetupScreen extends ConsumerWidget {
             .valueOrNull
             ?.defaultPlayerNames ??
         const <String>[];
+    final colors =
+        ref
+            .watch(preferencesNotifierProvider)
+            .valueOrNull
+            ?.defaultPlayerColors ??
+        const <String>[];
     final module = const DominoesModule();
     return SessionSetupScaffold(
       module: module,
       initialPlayerNames: names,
+      initialPlayerColors: colors,
       onStartGame: (result) async {
         final sessionId = await ref
             .read(activeSessionsNotifierProvider.notifier)

@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'preferences_provider.dart';
+import 'prefs_keys.dart';
+import '../monetization/sound_pack_catalog.dart';
 
 part 'audio_provider.g.dart';
 
@@ -41,9 +44,7 @@ class AudioService {
     try {
       await player.seek(Duration.zero);
       await player.play();
-    } catch (_) {
-      // Stub assets may be empty in local development.
-    }
+    } catch (_) {}
   }
 
   void dispose() {
@@ -57,27 +58,26 @@ class AudioService {
 
 @Riverpod(keepAlive: true)
 Future<AudioService> audioService(Ref ref) async {
+  // Re-initialize whenever the sound pack changes.
+  final prefs = ref.watch(preferencesNotifierProvider);
+  final packId = prefs.valueOrNull != null
+      ? ref.read(preferencesNotifierProvider.notifier).currentSoundPackId
+      : 'classic';
+  // Validate that the pack exists; fall back to classic.
+  final validPackId = SoundPacks.all.any((p) => p.id == packId) ? packId : 'classic';
+
   final diceRoll = AudioPlayer();
   final coinFlip = AudioPlayer();
   final timerAlert = AudioPlayer();
   final scoreConfirm = AudioPlayer();
   final bust = AudioPlayer();
 
-  try {
-    await diceRoll.setAsset('assets/sounds/dice_roll.wav');
-  } catch (_) {}
-  try {
-    await coinFlip.setAsset('assets/sounds/coin_flip.wav');
-  } catch (_) {}
-  try {
-    await timerAlert.setAsset('assets/sounds/timer_alert.wav');
-  } catch (_) {}
-  try {
-    await scoreConfirm.setAsset('assets/sounds/score_confirm.wav');
-  } catch (_) {}
-  try {
-    await bust.setAsset('assets/sounds/bust.wav');
-  } catch (_) {}
+  final dir = 'assets/sounds/$validPackId';
+  try { await diceRoll.setAsset('$dir/dice_roll.wav'); } catch (_) {}
+  try { await coinFlip.setAsset('$dir/coin_flip.wav'); } catch (_) {}
+  try { await timerAlert.setAsset('$dir/timer_alert.wav'); } catch (_) {}
+  try { await scoreConfirm.setAsset('$dir/score_confirm.wav'); } catch (_) {}
+  try { await bust.setAsset('$dir/bust.wav'); } catch (_) {}
 
   final service = AudioService(
     diceRollPlayer: diceRoll,
@@ -86,8 +86,8 @@ Future<AudioService> audioService(Ref ref) async {
     scoreConfirmPlayer: scoreConfirm,
     bustPlayer: bust,
     isSoundEnabled: () {
-      final prefs = ref.read(preferencesNotifierProvider).valueOrNull;
-      return prefs?.soundEnabled ?? true;
+      final p = ref.read(preferencesNotifierProvider).valueOrNull;
+      return p?.soundEnabled ?? true;
     },
   );
 

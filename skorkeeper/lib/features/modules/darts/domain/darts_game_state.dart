@@ -31,7 +31,6 @@ abstract class DartsPlayerState with _$DartsPlayerState {
 }
 
 @freezed
-@JsonSerializable(explicitToJson: true)
 abstract class DartsGameState extends GameModuleState with _$DartsGameState {
   const DartsGameState._();
 

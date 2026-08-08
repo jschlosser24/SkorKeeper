@@ -25,10 +25,17 @@ class _FarkleSetupScreenState extends ConsumerState<FarkleSetupScreen> {
             .valueOrNull
             ?.defaultPlayerNames ??
         const <String>[];
+    final colors =
+        ref
+            .watch(preferencesNotifierProvider)
+            .valueOrNull
+            ?.defaultPlayerColors ??
+        const <String>[];
     final module = FarkleModule(targetScore: _targetScore.round());
     return SessionSetupScaffold(
       module: module,
       initialPlayerNames: names,
+      initialPlayerColors: colors,
       extraContent: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

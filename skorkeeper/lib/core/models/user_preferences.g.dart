@@ -20,6 +20,12 @@ _UserPreferences _$UserPreferencesFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const <String>[],
+      defaultPlayerColors:
+          (json['defaultPlayerColors'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const <String>[],
+      selectedThemeId: json['selectedThemeId'] as String? ?? 'midnightWolves',
     );
 
 Map<String, dynamic> _$UserPreferencesToJson(_UserPreferences instance) =>
@@ -30,6 +36,8 @@ Map<String, dynamic> _$UserPreferencesToJson(_UserPreferences instance) =>
       'shakeToRollEnabled': instance.shakeToRollEnabled,
       'shakeSensitivity': instance.shakeSensitivity,
       'defaultPlayerNames': instance.defaultPlayerNames,
+      'defaultPlayerColors': instance.defaultPlayerColors,
+      'selectedThemeId': instance.selectedThemeId,
     };
 
 const _$ThemeModeEnumMap = {

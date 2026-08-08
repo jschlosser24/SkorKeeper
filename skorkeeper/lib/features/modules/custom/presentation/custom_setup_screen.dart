@@ -26,10 +26,17 @@ class _CustomSetupScreenState extends ConsumerState<CustomSetupScreen> {
             .valueOrNull
             ?.defaultPlayerNames ??
         const <String>[];
+    final colors =
+        ref
+            .watch(preferencesNotifierProvider)
+            .valueOrNull
+            ?.defaultPlayerColors ??
+        const <String>[];
     return SessionSetupScaffold(
       module: const CustomGameModule(),
       appBarTitle: 'Custom Scoring Setup',
       initialPlayerNames: names,
+      initialPlayerColors: colors,
       sessionNameLabel: 'Game name (optional)',
       initialSessionName: 'Custom Game',
       extraContent: Column(

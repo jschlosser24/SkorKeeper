@@ -18,9 +18,16 @@ class CribbageSetupScreen extends ConsumerWidget {
             .valueOrNull
             ?.defaultPlayerNames ??
         const <String>[];
+    final colors =
+        ref
+            .watch(preferencesNotifierProvider)
+            .valueOrNull
+            ?.defaultPlayerColors ??
+        const <String>[];
     return SessionSetupScaffold(
       module: const CribbageModule(),
       initialPlayerNames: names.take(3).toList(),
+      initialPlayerColors: colors.take(3).toList(),
       participantPluralLabel: 'Teams',
       participantSingularLabel: 'Team',
       onStartGame: (result) async {

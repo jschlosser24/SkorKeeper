@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ToolsScreen extends StatelessWidget {
+import '../../core/monetization/monetized_banner.dart';
+
+class ToolsScreen extends ConsumerWidget {
   const ToolsScreen({super.key});
 
   static const _tools = <({String title, IconData icon, String route})>[
@@ -18,10 +21,11 @@ class ToolsScreen extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final color = Theme.of(context).colorScheme.onSurface;
     return Scaffold(
       appBar: AppBar(title: const Text('Game Tools')),
+      bottomNavigationBar: const MonetizedBanner(),
       body: GridView.builder(
         padding: const EdgeInsets.all(16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

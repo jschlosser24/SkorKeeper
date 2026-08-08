@@ -15,6 +15,8 @@ abstract class ColorTokens {
   static const Color playerTeal = Color(0xFF00C0A0);
   static const Color playerRed = Color(0xFFE84855);
   static const Color playerPurple = Color(0xFF8338EC);
+  static const Color princePrimary = Color(0xFF221C35);
+  static const Color princeViolet = Color(0xFF981D97);
 
   // Light mode semantics
   static const Color surfaceLight = Color(0xFFFFFFFF);

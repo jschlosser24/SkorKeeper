@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/monetization/monetized_banner.dart';
 import '../../../core/modules/game_module.dart';
 import '../../../core/modules/game_module_registry.dart';
 import '../../../core/providers/active_sessions_provider.dart';
@@ -82,6 +83,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('SkorKeeper')),
+      bottomNavigationBar: const MonetizedBanner(),
       body: activeSessions.when(
         data: (sessions) {
           final activeSession = sessions.isEmpty ? null : sessions.first;

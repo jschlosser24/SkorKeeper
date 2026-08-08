@@ -1,61 +1,31 @@
 import 'package:flutter/material.dart';
 
-import 'color_tokens.dart';
+import '../../core/monetization/theme_catalog.dart';
+import '../../core/monetization/theme_definition.dart';
 import 'text_styles.dart';
 
 abstract class AppTheme {
   const AppTheme._();
 
-  static ThemeData light() {
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.light,
-      colorScheme: const ColorScheme.light(
-        primary: ColorTokens.navyPrimary,
-        secondary: ColorTokens.lakeBlue,
-        tertiary: ColorTokens.associationGreen,
-        surface: ColorTokens.surfaceLight,
-        onPrimary: ColorTokens.onPrimaryLight,
-        onSurface: ColorTokens.onSurfaceLight,
-      ),
-      scaffoldBackgroundColor: ColorTokens.backgroundLight,
-      textTheme: const TextTheme(
-        displayLarge: AppTextStyles.display,
-        headlineMedium: AppTextStyles.headline,
-        titleLarge: AppTextStyles.title,
-        titleMedium: AppTextStyles.titleMedium,
-        bodyLarge: AppTextStyles.body,
-        bodyMedium: AppTextStyles.bodySmall,
-        labelLarge: AppTextStyles.label,
-        bodySmall: AppTextStyles.caption,
-      ),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: ColorTokens.associationGreen,
-      ),
-      checkboxTheme: CheckboxThemeData(
-        fillColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return ColorTokens.associationGreen;
-          }
-          return null;
-        }),
-      ),
-    );
+  static ThemeData light([AppThemeDefinition? def]) {
+    final scheme = (def ?? ThemeCatalog.defaultTheme).lightScheme;
+    return _build(scheme, Brightness.light);
   }
 
-  static ThemeData dark() {
+  static ThemeData dark([AppThemeDefinition? def]) {
+    final scheme = (def ?? ThemeCatalog.defaultTheme).darkScheme;
+    return _build(scheme, Brightness.dark);
+  }
+
+  static ThemeData _build(ColorScheme scheme, Brightness brightness) {
+    final isLight = brightness == Brightness.light;
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
-      colorScheme: const ColorScheme.dark(
-        primary: ColorTokens.lakeBlue,
-        secondary: ColorTokens.moonlightSilver,
-        tertiary: ColorTokens.associationGreen,
-        surface: ColorTokens.surfaceDark,
-        onPrimary: ColorTokens.onPrimaryDark,
-        onSurface: ColorTokens.onSurfaceDark,
-      ),
-      scaffoldBackgroundColor: ColorTokens.backgroundDark,
+      brightness: brightness,
+      colorScheme: scheme,
+      scaffoldBackgroundColor: isLight
+          ? Color.lerp(scheme.surface, scheme.primary, 0.03)!
+          : Color.lerp(scheme.surface, Colors.black, 0.15)!,
       textTheme: const TextTheme(
         displayLarge: AppTextStyles.display,
         headlineMedium: AppTextStyles.headline,
@@ -66,13 +36,13 @@ abstract class AppTheme {
         labelLarge: AppTextStyles.label,
         bodySmall: AppTextStyles.caption,
       ),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: ColorTokens.associationGreen,
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: scheme.tertiary,
       ),
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return ColorTokens.associationGreen;
+            return scheme.tertiary;
           }
           return null;
         }),

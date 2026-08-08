@@ -1,12 +1,52 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../core/database/app_database.dart';
+import '../../core/monetization/monetized_banner.dart';
 import '../../core/providers/history_provider.dart';
+import '../../core/providers/pro_state_provider.dart';
+
+enum _SortOption {
+  newestFirst,
+  oldestFirst,
+  gameTypeAZ,
+  winnerAZ;
+
+  String get label {
+    switch (this) {
+      case _SortOption.newestFirst:
+        return 'Newest first';
+      case _SortOption.oldestFirst:
+        return 'Oldest first';
+      case _SortOption.gameTypeAZ,
+          :
+        return 'Game type (A–Z)';
+      case _SortOption.winnerAZ:
+        return 'Winner (A–Z)';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case _SortOption.newestFirst:
+        return Icons.arrow_downward_rounded;
+      case _SortOption.oldestFirst:
+        return Icons.arrow_upward_rounded;
+      case _SortOption.gameTypeAZ:
+        return Icons.sort_by_alpha_rounded;
+      case _SortOption.winnerAZ:
+        return Icons.emoji_events_rounded;
+    }
+  }
+}
 
 class HistoryListScreen extends ConsumerStatefulWidget {
   const HistoryListScreen({super.key});
@@ -22,6 +62,7 @@ class _HistoryListScreenState extends ConsumerState<HistoryListScreen> {
   List<HistoryRecord>? _searchResults;
   bool _selectionMode = false;
   final Set<int> _selectedRecordIds = <int>{};
+  _SortOption _sortOption = _SortOption.newestFirst;
 
   @override
   void dispose() {
@@ -33,6 +74,7 @@ class _HistoryListScreenState extends ConsumerState<HistoryListScreen> {
   @override
   Widget build(BuildContext context) {
     final historyAsync = ref.watch(historyNotifierProvider);
+    final isPro = ref.watch(proStateNotifierProvider).valueOrNull ?? false;
     final isLightMode = Theme.of(context).brightness == Brightness.light;
     return Scaffold(
       appBar: AppBar(
@@ -52,7 +94,20 @@ class _HistoryListScreenState extends ConsumerState<HistoryListScreen> {
               onPressed: _selectedRecordIds.isEmpty ? null : _deleteSelected,
               icon: const Icon(Icons.delete_outline),
               label: Text('Delete (${_selectedRecordIds.length})'),
+            )
+          else ...[
+            IconButton(
+              tooltip: 'Sort',
+              icon: const Icon(Icons.sort_rounded),
+              onPressed: () => _showSortSheet(context),
             ),
+            if (isPro)
+              IconButton(
+                tooltip: 'Export CSV',
+                icon: const Icon(Icons.download_rounded),
+                onPressed: () => _exportCsv(context, historyAsync.valueOrNull ?? []),
+              ),
+          ],
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(72),
@@ -70,6 +125,7 @@ class _HistoryListScreenState extends ConsumerState<HistoryListScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: const MonetizedBanner(),
       body: historyAsync.when(
         data: (history) {
           final visibleRecords = _applyLocalFilters(_searchResults ?? history);
@@ -252,12 +308,25 @@ class _HistoryListScreenState extends ConsumerState<HistoryListScreen> {
   }
 
   List<HistoryRecord> _applyLocalFilters(List<HistoryRecord> source) {
-    if (_selectedGameType == null) {
-      return source;
+    var result = _selectedGameType == null
+        ? source
+        : source.where((r) => r.gameType == _selectedGameType).toList();
+    result = List.of(result);
+    switch (_sortOption) {
+      case _SortOption.newestFirst:
+        result.sort((a, b) => b.playedAt.compareTo(a.playedAt));
+      case _SortOption.oldestFirst:
+        result.sort((a, b) => a.playedAt.compareTo(b.playedAt));
+      case _SortOption.gameTypeAZ:
+        result.sort((a, b) => a.gameType.compareTo(b.gameType));
+      case _SortOption.winnerAZ:
+        result.sort((a, b) {
+          final wa = a.winnerDisplayName ?? '';
+          final wb = b.winnerDisplayName ?? '';
+          return wa.compareTo(wb);
+        });
     }
-    return source
-        .where((record) => record.gameType == _selectedGameType)
-        .toList();
+    return result;
   }
 
   Future<bool> _confirmDelete(HistoryRecord record) async {
@@ -366,6 +435,77 @@ class _HistoryListScreenState extends ConsumerState<HistoryListScreen> {
                 ),
         ),
       );
+  }
+
+  void _showSortSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const ListTile(title: Text('Sort by', style: TextStyle(fontWeight: FontWeight.bold))),
+            for (final option in _SortOption.values)
+              RadioListTile<_SortOption>(
+                title: Text(option.label),
+                secondary: Icon(option.icon),
+                value: option,
+                groupValue: _sortOption,
+                onChanged: (v) {
+                  if (v != null) setState(() => _sortOption = v);
+                  Navigator.of(ctx).pop();
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _exportCsv(BuildContext context, List<HistoryRecord> all) async {
+    final visible = _applyLocalFilters(_searchResults ?? all);
+    if (visible.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No records to export.')),
+      );
+      return;
+    }
+
+    final buf = StringBuffer();
+    buf.writeln('Date,Game,Session Name,Players,Winner,Duration (min)');
+    final fmt = DateFormat('yyyy-MM-dd HH:mm');
+    for (final r in visible) {
+      final date = fmt.format(DateTime.fromMillisecondsSinceEpoch(r.playedAt));
+      final game = _csvCell(_formatGameType(r.gameType));
+      final name = _csvCell(r.sessionName ?? '');
+      final players = _csvCell(r.playerNames);
+      final winner = _csvCell(r.winnerDisplayName ?? '');
+      final mins = r.durationSeconds != null
+          ? (r.durationSeconds! / 60).toStringAsFixed(1)
+          : '';
+      buf.writeln('$date,$game,$name,$players,$winner,$mins');
+    }
+
+    try {
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/skorkeeper_history.csv');
+      await file.writeAsString(buf.toString());
+      await Share.shareXFiles(
+        [XFile(file.path, mimeType: 'text/csv')],
+        subject: 'SkorKeeper History',
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    }
+  }
+
+  static String _csvCell(String value) {
+    final escaped = value.replaceAll('"', '""');
+    return '"$escaped"';
   }
 
   String _formatGameType(String gameType) {

@@ -4,3 +4,6 @@
 
 # IDE - VS Code
 .vscode/
+
+# Local-only docs
+LOCAL_PUBLISH_SETUP.md

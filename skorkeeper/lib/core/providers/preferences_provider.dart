@@ -28,6 +28,12 @@ class PreferencesNotifier extends _$PreferencesNotifier {
         : ThemeMode.system;
     final namesJson = _prefs.getString(PrefsKeys.defaultPlayerNames) ?? '[]';
     final names = List<String>.from(jsonDecode(namesJson) as List<dynamic>);
+    final colorsJson = _prefs.getString(PrefsKeys.defaultPlayerColors) ?? '[]';
+    final colors = List<String>.from(jsonDecode(colorsJson) as List<dynamic>);
+    final selectedThemeId =
+        _prefs.getString(PrefsKeys.selectedThemeId) ?? 'midnightWolves';
+    final soundPackId =
+        _prefs.getString(PrefsKeys.soundPackId) ?? 'classic';
     return UserPreferences(
       themeMode: themeMode,
       soundEnabled: _prefs.getBool(PrefsKeys.soundEnabled) ?? true,
@@ -35,7 +41,18 @@ class PreferencesNotifier extends _$PreferencesNotifier {
       shakeToRollEnabled: _prefs.getBool(PrefsKeys.shakeToRollEnabled) ?? true,
       shakeSensitivity: _prefs.getDouble(PrefsKeys.shakeSensitivity) ?? 15.0,
       defaultPlayerNames: names,
+      defaultPlayerColors: colors,
+      selectedThemeId: selectedThemeId,
     );
+  }
+
+  String get currentSoundPackId =>
+      _prefs.getString(PrefsKeys.soundPackId) ?? 'classic';
+
+  Future<void> updateSoundPackId(String packId) async {
+    await _prefs.setString(PrefsKeys.soundPackId, packId);
+    // Trigger a state refresh so listeners rebuild.
+    state = AsyncData(_current());
   }
 
   UserPreferences _current() => state.valueOrNull ?? _load();
@@ -73,5 +90,21 @@ class PreferencesNotifier extends _$PreferencesNotifier {
   Future<void> updateDefaultPlayerNames(List<String> names) async {
     await _prefs.setString(PrefsKeys.defaultPlayerNames, jsonEncode(names));
     state = AsyncData(_current().copyWith(defaultPlayerNames: names));
+  }
+
+  Future<void> updateDefaultPlayerColors(List<String> colors) async {
+    await _prefs.setString(PrefsKeys.defaultPlayerColors, jsonEncode(colors));
+    state = AsyncData(_current().copyWith(defaultPlayerColors: colors));
+  }
+
+  Future<void> updateDefaultPlayers(List<String> names, List<String> colors) async {
+    await _prefs.setString(PrefsKeys.defaultPlayerNames, jsonEncode(names));
+    await _prefs.setString(PrefsKeys.defaultPlayerColors, jsonEncode(colors));
+    state = AsyncData(_current().copyWith(defaultPlayerNames: names, defaultPlayerColors: colors));
+  }
+
+  Future<void> updateSelectedTheme(String themeId) async {
+    await _prefs.setString(PrefsKeys.selectedThemeId, themeId);
+    state = AsyncData(_current().copyWith(selectedThemeId: themeId));
   }
 }

@@ -18,9 +18,16 @@ class BowlingSetupScreen extends ConsumerWidget {
             .valueOrNull
             ?.defaultPlayerNames ??
         const <String>[];
+    final colors =
+        ref
+            .watch(preferencesNotifierProvider)
+            .valueOrNull
+            ?.defaultPlayerColors ??
+        const <String>[];
     return SessionSetupScaffold(
       module: const BowlingModule(),
       initialPlayerNames: names,
+      initialPlayerColors: colors,
       onStartGame: (result) async {
         final module = const BowlingModule();
         final sessionId = await ref

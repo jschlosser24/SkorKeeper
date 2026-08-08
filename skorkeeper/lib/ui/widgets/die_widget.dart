@@ -19,6 +19,9 @@ class DieWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final fillColor = cs.surface;
+    final strokeColor = cs.primary;
     final child = SizedBox(
       width: size,
       height: size,
@@ -27,12 +30,19 @@ class DieWidget extends StatelessWidget {
         children: [
           CustomPaint(
             size: Size.square(size),
-            painter: _DiePainter(value: value, type: type),
+            painter: _DiePainter(
+              value: value,
+              type: type,
+              fillColor: fillColor,
+              strokeColor: strokeColor,
+            ),
           ),
           if (type != DieType.d6)
             Text(
               value.toString(),
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: cs.onSurface,
+              ),
             ),
         ],
       ),
@@ -44,17 +54,24 @@ class DieWidget extends StatelessWidget {
 }
 
 class _DiePainter extends CustomPainter {
-  const _DiePainter({required this.value, required this.type});
+  const _DiePainter({
+    required this.value,
+    required this.type,
+    required this.fillColor,
+    required this.strokeColor,
+  });
 
   final int value;
   final DieType type;
+  final Color fillColor;
+  final Color strokeColor;
 
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
-    final fill = Paint()..color = Colors.white;
+    final fill = Paint()..color = fillColor;
     final stroke = Paint()
-      ..color = const Color(0xFF0C2340)
+      ..color = strokeColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
     final radius = Radius.circular(size.width * 0.18);
@@ -63,7 +80,7 @@ class _DiePainter extends CustomPainter {
     if (type != DieType.d6) {
       return;
     }
-    final pipPaint = Paint()..color = const Color(0xFF0C2340);
+    final pipPaint = Paint()..color = strokeColor;
     for (final offset in _pipOffsets(value)) {
       canvas.drawCircle(offset * size.width, size.width * 0.06, pipPaint);
     }
@@ -95,6 +112,9 @@ class _DiePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _DiePainter oldDelegate) {
-    return oldDelegate.value != value || oldDelegate.type != type;
+    return oldDelegate.value != value ||
+        oldDelegate.type != type ||
+        oldDelegate.fillColor != fillColor ||
+        oldDelegate.strokeColor != strokeColor;
   }
 }

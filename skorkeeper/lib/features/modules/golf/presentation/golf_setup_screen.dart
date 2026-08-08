@@ -72,9 +72,16 @@ class _GolfSetupScreenState extends ConsumerState<GolfSetupScreen> {
             .valueOrNull
             ?.defaultPlayerNames ??
         const <String>[];
+    final colors =
+        ref
+            .watch(preferencesNotifierProvider)
+            .valueOrNull
+            ?.defaultPlayerColors ??
+        const <String>[];
     return SessionSetupScaffold(
       module: _module(),
       initialPlayerNames: names,
+      initialPlayerColors: colors,
       extraContent: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

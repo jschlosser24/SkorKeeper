@@ -63,10 +63,17 @@ class _DartsSetupScreenState extends ConsumerState<DartsSetupScreen> {
             .valueOrNull
             ?.defaultPlayerNames ??
         const <String>[];
+    final colors =
+        ref
+            .watch(preferencesNotifierProvider)
+            .valueOrNull
+            ?.defaultPlayerColors ??
+        const <String>[];
     final module = _buildModule();
     return SessionSetupScaffold(
       module: module,
       initialPlayerNames: names,
+      initialPlayerColors: colors,
       extraContent: !_isX01
           ? null
           : Column(

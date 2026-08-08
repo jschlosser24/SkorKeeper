@@ -13,6 +13,8 @@ abstract class UserPreferences with _$UserPreferences {
     @Default(true) bool shakeToRollEnabled,
     @Default(15.0) double shakeSensitivity,
     @Default(<String>[]) List<String> defaultPlayerNames,
+    @Default(<String>[]) List<String> defaultPlayerColors,
+    @Default('midnightWolves') String selectedThemeId,
   }) = _UserPreferences;
 
   factory UserPreferences.fromJson(Map<String, dynamic> json) =>

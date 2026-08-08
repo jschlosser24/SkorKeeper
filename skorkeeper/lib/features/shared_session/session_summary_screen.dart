@@ -3,28 +3,47 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../core/database/app_database.dart' as db;
 import '../../core/models/session_player.dart';
+import '../../core/monetization/ad_service.dart';
 import '../../core/modules/leaderboard_entry.dart';
 import '../../core/modules/game_module_registry.dart';
 import '../../core/providers/database_provider.dart';
+import '../../core/providers/pro_state_provider.dart';
 import '../../ui/widgets/leaderboard_row.dart';
 
-class SessionSummaryScreen extends ConsumerWidget {
+class SessionSummaryScreen extends ConsumerStatefulWidget {
   const SessionSummaryScreen({required this.sessionId, super.key});
 
   final int sessionId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SessionSummaryScreen> createState() =>
+      _SessionSummaryScreenState();
+}
+
+class _SessionSummaryScreenState extends ConsumerState<SessionSummaryScreen> {
+  bool _interstitialRequested = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showInterstitialIfNeeded();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final database = ref.watch(appDatabaseProvider);
     return StreamBuilder<db.GameSession?>(
       stream: (database.select(
         database.gameSessions,
-      )..where((tbl) => tbl.id.equals(sessionId))).watchSingleOrNull(),
+      )..where((tbl) => tbl.id.equals(widget.sessionId))).watchSingleOrNull(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Scaffold(
@@ -98,6 +117,29 @@ class SessionSummaryScreen extends ConsumerWidget {
         );
       },
     );
+  }
+
+  Future<void> _showInterstitialIfNeeded() async {
+    if (_interstitialRequested) {
+      return;
+    }
+    _interstitialRequested = true;
+    final isPro = await ref
+        .read(proStateNotifierProvider.future)
+        .catchError((_) => false);
+    if (!mounted || isPro) {
+      return;
+    }
+    final ad = await AdService.instance.loadInterstitial();
+    if (!mounted || ad == null) {
+      ad?.dispose();
+      return;
+    }
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) => ad.dispose(),
+      onAdFailedToShowFullScreenContent: (ad, error) => ad.dispose(),
+    );
+    ad.show();
   }
 
   String _formatDuration(Duration duration) {

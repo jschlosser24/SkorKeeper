@@ -25,10 +25,17 @@ class _UnoSetupScreenState extends ConsumerState<UnoSetupScreen> {
             .valueOrNull
             ?.defaultPlayerNames ??
         const <String>[];
+    final colors =
+        ref
+            .watch(preferencesNotifierProvider)
+            .valueOrNull
+            ?.defaultPlayerColors ??
+        const <String>[];
     final module = UnoModule(targetScore: _targetScore.round());
     return SessionSetupScaffold(
       module: module,
       initialPlayerNames: names,
+      initialPlayerColors: colors,
       extraContent: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

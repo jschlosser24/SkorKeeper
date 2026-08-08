@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserPreferences {
 
- ThemeMode get themeMode; bool get soundEnabled; bool get hapticEnabled; bool get shakeToRollEnabled; double get shakeSensitivity; List<String> get defaultPlayerNames;
+ ThemeMode get themeMode; bool get soundEnabled; bool get hapticEnabled; bool get shakeToRollEnabled; double get shakeSensitivity; List<String> get defaultPlayerNames; List<String> get defaultPlayerColors; String get selectedThemeId;
 /// Create a copy of UserPreferences
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,19 +28,17 @@ $UserPreferencesCopyWith<UserPreferences> get copyWith => _$UserPreferencesCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserPreferences&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.soundEnabled, soundEnabled) || other.soundEnabled == soundEnabled)&&(identical(other.hapticEnabled, hapticEnabled) || other.hapticEnabled == hapticEnabled)&&(identical(other.shakeToRollEnabled, shakeToRollEnabled) || other.shakeToRollEnabled == shakeToRollEnabled)&&(identical(other.shakeSensitivity, shakeSensitivity) || other.shakeSensitivity == shakeSensitivity)&&const DeepCollectionEquality().equals(other.defaultPlayerNames, defaultPlayerNames));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserPreferences&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.soundEnabled, soundEnabled) || other.soundEnabled == soundEnabled)&&(identical(other.hapticEnabled, hapticEnabled) || other.hapticEnabled == hapticEnabled)&&(identical(other.shakeToRollEnabled, shakeToRollEnabled) || other.shakeToRollEnabled == shakeToRollEnabled)&&(identical(other.shakeSensitivity, shakeSensitivity) || other.shakeSensitivity == shakeSensitivity)&&const DeepCollectionEquality().equals(other.defaultPlayerNames, defaultPlayerNames)&&const DeepCollectionEquality().equals(other.defaultPlayerColors, defaultPlayerColors)&&(identical(other.selectedThemeId, selectedThemeId) || other.selectedThemeId == selectedThemeId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,themeMode,soundEnabled,hapticEnabled,shakeToRollEnabled,shakeSensitivity,const DeepCollectionEquality().hash(defaultPlayerNames));
+int get hashCode => Object.hash(runtimeType,themeMode,soundEnabled,hapticEnabled,shakeToRollEnabled,shakeSensitivity,const DeepCollectionEquality().hash(defaultPlayerNames),const DeepCollectionEquality().hash(defaultPlayerColors),selectedThemeId);
 
 @override
 String toString() {
-  return 'UserPreferences(themeMode: $themeMode, soundEnabled: $soundEnabled, hapticEnabled: $hapticEnabled, shakeToRollEnabled: $shakeToRollEnabled, shakeSensitivity: $shakeSensitivity, defaultPlayerNames: $defaultPlayerNames)';
+  return 'UserPreferences(themeMode: $themeMode, soundEnabled: $soundEnabled, hapticEnabled: $hapticEnabled, shakeToRollEnabled: $shakeToRollEnabled, shakeSensitivity: $shakeSensitivity, defaultPlayerNames: $defaultPlayerNames, defaultPlayerColors: $defaultPlayerColors, selectedThemeId: $selectedThemeId)';
 }
-
-
 }
 
 /// @nodoc
@@ -48,7 +46,7 @@ abstract mixin class $UserPreferencesCopyWith<$Res>  {
   factory $UserPreferencesCopyWith(UserPreferences value, $Res Function(UserPreferences) _then) = _$UserPreferencesCopyWithImpl;
 @useResult
 $Res call({
- ThemeMode themeMode, bool soundEnabled, bool hapticEnabled, bool shakeToRollEnabled, double shakeSensitivity, List<String> defaultPlayerNames
+ ThemeMode themeMode, bool soundEnabled, bool hapticEnabled, bool shakeToRollEnabled, double shakeSensitivity, List<String> defaultPlayerNames, List<String> defaultPlayerColors, String selectedThemeId
 });
 
 
@@ -65,7 +63,7 @@ class _$UserPreferencesCopyWithImpl<$Res>
 
 /// Create a copy of UserPreferences
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? themeMode = null,Object? soundEnabled = null,Object? hapticEnabled = null,Object? shakeToRollEnabled = null,Object? shakeSensitivity = null,Object? defaultPlayerNames = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? themeMode = null,Object? soundEnabled = null,Object? hapticEnabled = null,Object? shakeToRollEnabled = null,Object? shakeSensitivity = null,Object? defaultPlayerNames = null,Object? defaultPlayerColors = null,Object? selectedThemeId = null,}) {
   return _then(_self.copyWith(
 themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
 as ThemeMode,soundEnabled: null == soundEnabled ? _self.soundEnabled : soundEnabled // ignore: cast_nullable_to_non_nullable
@@ -73,7 +71,9 @@ as bool,hapticEnabled: null == hapticEnabled ? _self.hapticEnabled : hapticEnabl
 as bool,shakeToRollEnabled: null == shakeToRollEnabled ? _self.shakeToRollEnabled : shakeToRollEnabled // ignore: cast_nullable_to_non_nullable
 as bool,shakeSensitivity: null == shakeSensitivity ? _self.shakeSensitivity : shakeSensitivity // ignore: cast_nullable_to_non_nullable
 as double,defaultPlayerNames: null == defaultPlayerNames ? _self.defaultPlayerNames : defaultPlayerNames // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,defaultPlayerColors: null == defaultPlayerColors ? _self.defaultPlayerColors : defaultPlayerColors // ignore: cast_nullable_to_non_nullable
+as List<String>,selectedThemeId: null == selectedThemeId ? _self.selectedThemeId : selectedThemeId // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -158,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ThemeMode themeMode,  bool soundEnabled,  bool hapticEnabled,  bool shakeToRollEnabled,  double shakeSensitivity,  List<String> defaultPlayerNames)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ThemeMode themeMode,  bool soundEnabled,  bool hapticEnabled,  bool shakeToRollEnabled,  double shakeSensitivity,  List<String> defaultPlayerNames,  List<String> defaultPlayerColors,  String selectedThemeId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserPreferences() when $default != null:
-return $default(_that.themeMode,_that.soundEnabled,_that.hapticEnabled,_that.shakeToRollEnabled,_that.shakeSensitivity,_that.defaultPlayerNames);case _:
+return $default(_that.themeMode,_that.soundEnabled,_that.hapticEnabled,_that.shakeToRollEnabled,_that.shakeSensitivity,_that.defaultPlayerNames,_that.defaultPlayerColors,_that.selectedThemeId);case _:
   return orElse();
 
 }
@@ -179,10 +179,10 @@ return $default(_that.themeMode,_that.soundEnabled,_that.hapticEnabled,_that.sha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ThemeMode themeMode,  bool soundEnabled,  bool hapticEnabled,  bool shakeToRollEnabled,  double shakeSensitivity,  List<String> defaultPlayerNames)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ThemeMode themeMode,  bool soundEnabled,  bool hapticEnabled,  bool shakeToRollEnabled,  double shakeSensitivity,  List<String> defaultPlayerNames,  List<String> defaultPlayerColors,  String selectedThemeId)  $default,) {final _that = this;
 switch (_that) {
 case _UserPreferences():
-return $default(_that.themeMode,_that.soundEnabled,_that.hapticEnabled,_that.shakeToRollEnabled,_that.shakeSensitivity,_that.defaultPlayerNames);case _:
+return $default(_that.themeMode,_that.soundEnabled,_that.hapticEnabled,_that.shakeToRollEnabled,_that.shakeSensitivity,_that.defaultPlayerNames,_that.defaultPlayerColors,_that.selectedThemeId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +199,10 @@ return $default(_that.themeMode,_that.soundEnabled,_that.hapticEnabled,_that.sha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ThemeMode themeMode,  bool soundEnabled,  bool hapticEnabled,  bool shakeToRollEnabled,  double shakeSensitivity,  List<String> defaultPlayerNames)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ThemeMode themeMode,  bool soundEnabled,  bool hapticEnabled,  bool shakeToRollEnabled,  double shakeSensitivity,  List<String> defaultPlayerNames,  List<String> defaultPlayerColors,  String selectedThemeId)?  $default,) {final _that = this;
 switch (_that) {
 case _UserPreferences() when $default != null:
-return $default(_that.themeMode,_that.soundEnabled,_that.hapticEnabled,_that.shakeToRollEnabled,_that.shakeSensitivity,_that.defaultPlayerNames);case _:
+return $default(_that.themeMode,_that.soundEnabled,_that.hapticEnabled,_that.shakeToRollEnabled,_that.shakeSensitivity,_that.defaultPlayerNames,_that.defaultPlayerColors,_that.selectedThemeId);case _:
   return null;
 
 }
@@ -214,7 +214,7 @@ return $default(_that.themeMode,_that.soundEnabled,_that.hapticEnabled,_that.sha
 @JsonSerializable()
 
 class _UserPreferences implements UserPreferences {
-  const _UserPreferences({this.themeMode = ThemeMode.system, this.soundEnabled = true, this.hapticEnabled = true, this.shakeToRollEnabled = true, this.shakeSensitivity = 15.0, final  List<String> defaultPlayerNames = const <String>[]}): _defaultPlayerNames = defaultPlayerNames;
+  const _UserPreferences({this.themeMode = ThemeMode.system, this.soundEnabled = true, this.hapticEnabled = true, this.shakeToRollEnabled = true, this.shakeSensitivity = 15.0, final  List<String> defaultPlayerNames = const <String>[], final  List<String> defaultPlayerColors = const <String>[], this.selectedThemeId = 'midnightWolves'}): _defaultPlayerNames = defaultPlayerNames, _defaultPlayerColors = defaultPlayerColors;
   factory _UserPreferences.fromJson(Map<String, dynamic> json) => _$UserPreferencesFromJson(json);
 
 @override@JsonKey() final  ThemeMode themeMode;
@@ -229,6 +229,14 @@ class _UserPreferences implements UserPreferences {
   return EqualUnmodifiableListView(_defaultPlayerNames);
 }
 
+ final  List<String> _defaultPlayerColors;
+@override@JsonKey() List<String> get defaultPlayerColors {
+  if (_defaultPlayerColors is EqualUnmodifiableListView) return _defaultPlayerColors;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_defaultPlayerColors);
+}
+
+@override@JsonKey() final  String selectedThemeId;
 
 /// Create a copy of UserPreferences
 /// with the given fields replaced by the non-null parameter values.
@@ -243,16 +251,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserPreferences&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.soundEnabled, soundEnabled) || other.soundEnabled == soundEnabled)&&(identical(other.hapticEnabled, hapticEnabled) || other.hapticEnabled == hapticEnabled)&&(identical(other.shakeToRollEnabled, shakeToRollEnabled) || other.shakeToRollEnabled == shakeToRollEnabled)&&(identical(other.shakeSensitivity, shakeSensitivity) || other.shakeSensitivity == shakeSensitivity)&&const DeepCollectionEquality().equals(other._defaultPlayerNames, _defaultPlayerNames));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserPreferences&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.soundEnabled, soundEnabled) || other.soundEnabled == soundEnabled)&&(identical(other.hapticEnabled, hapticEnabled) || other.hapticEnabled == hapticEnabled)&&(identical(other.shakeToRollEnabled, shakeToRollEnabled) || other.shakeToRollEnabled == shakeToRollEnabled)&&(identical(other.shakeSensitivity, shakeSensitivity) || other.shakeSensitivity == shakeSensitivity)&&const DeepCollectionEquality().equals(other._defaultPlayerNames, _defaultPlayerNames)&&const DeepCollectionEquality().equals(other._defaultPlayerColors, _defaultPlayerColors)&&(identical(other.selectedThemeId, selectedThemeId) || other.selectedThemeId == selectedThemeId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,themeMode,soundEnabled,hapticEnabled,shakeToRollEnabled,shakeSensitivity,const DeepCollectionEquality().hash(_defaultPlayerNames));
+int get hashCode => Object.hash(runtimeType,themeMode,soundEnabled,hapticEnabled,shakeToRollEnabled,shakeSensitivity,const DeepCollectionEquality().hash(_defaultPlayerNames),const DeepCollectionEquality().hash(_defaultPlayerColors),selectedThemeId);
 
 @override
 String toString() {
-  return 'UserPreferences(themeMode: $themeMode, soundEnabled: $soundEnabled, hapticEnabled: $hapticEnabled, shakeToRollEnabled: $shakeToRollEnabled, shakeSensitivity: $shakeSensitivity, defaultPlayerNames: $defaultPlayerNames)';
+  return 'UserPreferences(themeMode: $themeMode, soundEnabled: $soundEnabled, hapticEnabled: $hapticEnabled, shakeToRollEnabled: $shakeToRollEnabled, shakeSensitivity: $shakeSensitivity, defaultPlayerNames: $defaultPlayerNames, defaultPlayerColors: $defaultPlayerColors, selectedThemeId: $selectedThemeId)';
 }
 
 
@@ -263,7 +271,7 @@ abstract mixin class _$UserPreferencesCopyWith<$Res> implements $UserPreferences
   factory _$UserPreferencesCopyWith(_UserPreferences value, $Res Function(_UserPreferences) _then) = __$UserPreferencesCopyWithImpl;
 @override @useResult
 $Res call({
- ThemeMode themeMode, bool soundEnabled, bool hapticEnabled, bool shakeToRollEnabled, double shakeSensitivity, List<String> defaultPlayerNames
+ ThemeMode themeMode, bool soundEnabled, bool hapticEnabled, bool shakeToRollEnabled, double shakeSensitivity, List<String> defaultPlayerNames, List<String> defaultPlayerColors, String selectedThemeId
 });
 
 
@@ -280,7 +288,7 @@ class __$UserPreferencesCopyWithImpl<$Res>
 
 /// Create a copy of UserPreferences
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? themeMode = null,Object? soundEnabled = null,Object? hapticEnabled = null,Object? shakeToRollEnabled = null,Object? shakeSensitivity = null,Object? defaultPlayerNames = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? themeMode = null,Object? soundEnabled = null,Object? hapticEnabled = null,Object? shakeToRollEnabled = null,Object? shakeSensitivity = null,Object? defaultPlayerNames = null,Object? defaultPlayerColors = null,Object? selectedThemeId = null,}) {
   return _then(_UserPreferences(
 themeMode: null == themeMode ? _self.themeMode : themeMode // ignore: cast_nullable_to_non_nullable
 as ThemeMode,soundEnabled: null == soundEnabled ? _self.soundEnabled : soundEnabled // ignore: cast_nullable_to_non_nullable
@@ -288,7 +296,9 @@ as bool,hapticEnabled: null == hapticEnabled ? _self.hapticEnabled : hapticEnabl
 as bool,shakeToRollEnabled: null == shakeToRollEnabled ? _self.shakeToRollEnabled : shakeToRollEnabled // ignore: cast_nullable_to_non_nullable
 as bool,shakeSensitivity: null == shakeSensitivity ? _self.shakeSensitivity : shakeSensitivity // ignore: cast_nullable_to_non_nullable
 as double,defaultPlayerNames: null == defaultPlayerNames ? _self._defaultPlayerNames : defaultPlayerNames // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,defaultPlayerColors: null == defaultPlayerColors ? _self._defaultPlayerColors : defaultPlayerColors // ignore: cast_nullable_to_non_nullable
+as List<String>,selectedThemeId: null == selectedThemeId ? _self.selectedThemeId : selectedThemeId // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

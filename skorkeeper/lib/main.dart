@@ -6,6 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/database/app_database.dart';
 import 'core/models/game_type.dart';
+import 'core/monetization/ad_service.dart';
+import 'core/monetization/app_theme_id.dart';
+import 'core/monetization/purchase_service.dart';
+import 'core/monetization/theme_catalog.dart';
 import 'core/modules/game_module_registry.dart';
 import 'core/providers/audio_provider.dart';
 import 'core/providers/database_provider.dart';
@@ -33,6 +37,10 @@ import 'ui/theme/app_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   _registerModules();
+  await Future.wait<void>([
+    PurchaseService.configure().catchError((Object _) {}),
+    AdService.instance.initialize().catchError((Object _) {}),
+  ]);
   developer.Timeline.startSync('AppDatabase.open');
   final database = AppDatabase();
   try {
@@ -111,11 +119,19 @@ class SkorKeeperApp extends ConsumerWidget {
     final router = ref.watch(appRouterProvider);
     ref.watch(audioServiceProvider);
     final themeMode = preferences.valueOrNull?.themeMode ?? ThemeMode.system;
+    final selectedThemeIdStr =
+        preferences.valueOrNull?.selectedThemeId ?? 'midnightWolves';
+    final themeId = AppThemeId.values.firstWhere(
+      (e) => e.name == selectedThemeIdStr,
+      orElse: () => AppThemeId.midnightWolves,
+    );
+    final themeDef =
+        ThemeCatalog.findById(themeId) ?? ThemeCatalog.defaultTheme;
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'SkorKeeper',
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
+      theme: AppTheme.light(themeDef),
+      darkTheme: AppTheme.dark(themeDef),
       themeMode: themeMode,
       routerConfig: router,
     );

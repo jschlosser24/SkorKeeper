@@ -2206,6 +2206,805 @@ class TallyCountersCompanion extends UpdateCompanion<TallyCounter> {
   }
 }
 
+class $SportHistoryMetaTable extends SportHistoryMeta
+    with TableInfo<$SportHistoryMetaTable, SportHistoryMetaData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SportHistoryMetaTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<int> sessionId = GeneratedColumn<int>(
+    'session_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'UNIQUE REFERENCES game_sessions (id)',
+    ),
+  );
+  static const VerificationMeta _sportTypeMeta = const VerificationMeta(
+    'sportType',
+  );
+  @override
+  late final GeneratedColumn<String> sportType = GeneratedColumn<String>(
+    'sport_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _trackingModeMeta = const VerificationMeta(
+    'trackingMode',
+  );
+  @override
+  late final GeneratedColumn<String> trackingMode = GeneratedColumn<String>(
+    'tracking_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tierRequiredMeta = const VerificationMeta(
+    'tierRequired',
+  );
+  @override
+  late final GeneratedColumn<String> tierRequired = GeneratedColumn<String>(
+    'tier_required',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exportedAtMeta = const VerificationMeta(
+    'exportedAt',
+  );
+  @override
+  late final GeneratedColumn<int> exportedAt = GeneratedColumn<int>(
+    'exported_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _exportFormatsMeta = const VerificationMeta(
+    'exportFormats',
+  );
+  @override
+  late final GeneratedColumn<String> exportFormats = GeneratedColumn<String>(
+    'export_formats',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    sessionId,
+    sportType,
+    trackingMode,
+    tierRequired,
+    exportedAt,
+    exportFormats,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sport_history_meta';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SportHistoryMetaData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sessionIdMeta);
+    }
+    if (data.containsKey('sport_type')) {
+      context.handle(
+        _sportTypeMeta,
+        sportType.isAcceptableOrUnknown(data['sport_type']!, _sportTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sportTypeMeta);
+    }
+    if (data.containsKey('tracking_mode')) {
+      context.handle(
+        _trackingModeMeta,
+        trackingMode.isAcceptableOrUnknown(
+          data['tracking_mode']!,
+          _trackingModeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_trackingModeMeta);
+    }
+    if (data.containsKey('tier_required')) {
+      context.handle(
+        _tierRequiredMeta,
+        tierRequired.isAcceptableOrUnknown(
+          data['tier_required']!,
+          _tierRequiredMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_tierRequiredMeta);
+    }
+    if (data.containsKey('exported_at')) {
+      context.handle(
+        _exportedAtMeta,
+        exportedAt.isAcceptableOrUnknown(data['exported_at']!, _exportedAtMeta),
+      );
+    }
+    if (data.containsKey('export_formats')) {
+      context.handle(
+        _exportFormatsMeta,
+        exportFormats.isAcceptableOrUnknown(
+          data['export_formats']!,
+          _exportFormatsMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SportHistoryMetaData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SportHistoryMetaData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}session_id'],
+      )!,
+      sportType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sport_type'],
+      )!,
+      trackingMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tracking_mode'],
+      )!,
+      tierRequired: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tier_required'],
+      )!,
+      exportedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}exported_at'],
+      ),
+      exportFormats: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}export_formats'],
+      ),
+    );
+  }
+
+  @override
+  $SportHistoryMetaTable createAlias(String alias) {
+    return $SportHistoryMetaTable(attachedDatabase, alias);
+  }
+}
+
+class SportHistoryMetaData extends DataClass
+    implements Insertable<SportHistoryMetaData> {
+  final int id;
+
+  /// FK → [GameSessions.id]. UNIQUE — one meta row per game session.
+  final int sessionId;
+
+  /// Mirrors [GameSessions.gameType]; denormalized for query efficiency.
+  /// Values: 'sport_baseball', 'sport_basketball', etc.
+  final String sportType;
+
+  /// 'basic' or 'in_depth'
+  final String trackingMode;
+
+  /// 'sports_plan' or 'sports_pro'. Drives the 100-game limit count query.
+  final String tierRequired;
+
+  /// Unix timestamp (ms) of last export; null if never exported.
+  final int? exportedAt;
+
+  /// Comma-separated export formats used (e.g. 'pdf,csv'); null if not exported.
+  final String? exportFormats;
+  const SportHistoryMetaData({
+    required this.id,
+    required this.sessionId,
+    required this.sportType,
+    required this.trackingMode,
+    required this.tierRequired,
+    this.exportedAt,
+    this.exportFormats,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['session_id'] = Variable<int>(sessionId);
+    map['sport_type'] = Variable<String>(sportType);
+    map['tracking_mode'] = Variable<String>(trackingMode);
+    map['tier_required'] = Variable<String>(tierRequired);
+    if (!nullToAbsent || exportedAt != null) {
+      map['exported_at'] = Variable<int>(exportedAt);
+    }
+    if (!nullToAbsent || exportFormats != null) {
+      map['export_formats'] = Variable<String>(exportFormats);
+    }
+    return map;
+  }
+
+  SportHistoryMetaCompanion toCompanion(bool nullToAbsent) {
+    return SportHistoryMetaCompanion(
+      id: Value(id),
+      sessionId: Value(sessionId),
+      sportType: Value(sportType),
+      trackingMode: Value(trackingMode),
+      tierRequired: Value(tierRequired),
+      exportedAt: exportedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exportedAt),
+      exportFormats: exportFormats == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exportFormats),
+    );
+  }
+
+  factory SportHistoryMetaData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SportHistoryMetaData(
+      id: serializer.fromJson<int>(json['id']),
+      sessionId: serializer.fromJson<int>(json['sessionId']),
+      sportType: serializer.fromJson<String>(json['sportType']),
+      trackingMode: serializer.fromJson<String>(json['trackingMode']),
+      tierRequired: serializer.fromJson<String>(json['tierRequired']),
+      exportedAt: serializer.fromJson<int?>(json['exportedAt']),
+      exportFormats: serializer.fromJson<String?>(json['exportFormats']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'sessionId': serializer.toJson<int>(sessionId),
+      'sportType': serializer.toJson<String>(sportType),
+      'trackingMode': serializer.toJson<String>(trackingMode),
+      'tierRequired': serializer.toJson<String>(tierRequired),
+      'exportedAt': serializer.toJson<int?>(exportedAt),
+      'exportFormats': serializer.toJson<String?>(exportFormats),
+    };
+  }
+
+  SportHistoryMetaData copyWith({
+    int? id,
+    int? sessionId,
+    String? sportType,
+    String? trackingMode,
+    String? tierRequired,
+    Value<int?> exportedAt = const Value.absent(),
+    Value<String?> exportFormats = const Value.absent(),
+  }) => SportHistoryMetaData(
+    id: id ?? this.id,
+    sessionId: sessionId ?? this.sessionId,
+    sportType: sportType ?? this.sportType,
+    trackingMode: trackingMode ?? this.trackingMode,
+    tierRequired: tierRequired ?? this.tierRequired,
+    exportedAt: exportedAt.present ? exportedAt.value : this.exportedAt,
+    exportFormats: exportFormats.present
+        ? exportFormats.value
+        : this.exportFormats,
+  );
+  SportHistoryMetaData copyWithCompanion(SportHistoryMetaCompanion data) {
+    return SportHistoryMetaData(
+      id: data.id.present ? data.id.value : this.id,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      sportType: data.sportType.present ? data.sportType.value : this.sportType,
+      trackingMode: data.trackingMode.present
+          ? data.trackingMode.value
+          : this.trackingMode,
+      tierRequired: data.tierRequired.present
+          ? data.tierRequired.value
+          : this.tierRequired,
+      exportedAt: data.exportedAt.present
+          ? data.exportedAt.value
+          : this.exportedAt,
+      exportFormats: data.exportFormats.present
+          ? data.exportFormats.value
+          : this.exportFormats,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SportHistoryMetaData(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('sportType: $sportType, ')
+          ..write('trackingMode: $trackingMode, ')
+          ..write('tierRequired: $tierRequired, ')
+          ..write('exportedAt: $exportedAt, ')
+          ..write('exportFormats: $exportFormats')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    sessionId,
+    sportType,
+    trackingMode,
+    tierRequired,
+    exportedAt,
+    exportFormats,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SportHistoryMetaData &&
+          other.id == this.id &&
+          other.sessionId == this.sessionId &&
+          other.sportType == this.sportType &&
+          other.trackingMode == this.trackingMode &&
+          other.tierRequired == this.tierRequired &&
+          other.exportedAt == this.exportedAt &&
+          other.exportFormats == this.exportFormats);
+}
+
+class SportHistoryMetaCompanion extends UpdateCompanion<SportHistoryMetaData> {
+  final Value<int> id;
+  final Value<int> sessionId;
+  final Value<String> sportType;
+  final Value<String> trackingMode;
+  final Value<String> tierRequired;
+  final Value<int?> exportedAt;
+  final Value<String?> exportFormats;
+  const SportHistoryMetaCompanion({
+    this.id = const Value.absent(),
+    this.sessionId = const Value.absent(),
+    this.sportType = const Value.absent(),
+    this.trackingMode = const Value.absent(),
+    this.tierRequired = const Value.absent(),
+    this.exportedAt = const Value.absent(),
+    this.exportFormats = const Value.absent(),
+  });
+  SportHistoryMetaCompanion.insert({
+    this.id = const Value.absent(),
+    required int sessionId,
+    required String sportType,
+    required String trackingMode,
+    required String tierRequired,
+    this.exportedAt = const Value.absent(),
+    this.exportFormats = const Value.absent(),
+  }) : sessionId = Value(sessionId),
+       sportType = Value(sportType),
+       trackingMode = Value(trackingMode),
+       tierRequired = Value(tierRequired);
+  static Insertable<SportHistoryMetaData> custom({
+    Expression<int>? id,
+    Expression<int>? sessionId,
+    Expression<String>? sportType,
+    Expression<String>? trackingMode,
+    Expression<String>? tierRequired,
+    Expression<int>? exportedAt,
+    Expression<String>? exportFormats,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (sessionId != null) 'session_id': sessionId,
+      if (sportType != null) 'sport_type': sportType,
+      if (trackingMode != null) 'tracking_mode': trackingMode,
+      if (tierRequired != null) 'tier_required': tierRequired,
+      if (exportedAt != null) 'exported_at': exportedAt,
+      if (exportFormats != null) 'export_formats': exportFormats,
+    });
+  }
+
+  SportHistoryMetaCompanion copyWith({
+    Value<int>? id,
+    Value<int>? sessionId,
+    Value<String>? sportType,
+    Value<String>? trackingMode,
+    Value<String>? tierRequired,
+    Value<int?>? exportedAt,
+    Value<String?>? exportFormats,
+  }) {
+    return SportHistoryMetaCompanion(
+      id: id ?? this.id,
+      sessionId: sessionId ?? this.sessionId,
+      sportType: sportType ?? this.sportType,
+      trackingMode: trackingMode ?? this.trackingMode,
+      tierRequired: tierRequired ?? this.tierRequired,
+      exportedAt: exportedAt ?? this.exportedAt,
+      exportFormats: exportFormats ?? this.exportFormats,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (sessionId.present) {
+      map['session_id'] = Variable<int>(sessionId.value);
+    }
+    if (sportType.present) {
+      map['sport_type'] = Variable<String>(sportType.value);
+    }
+    if (trackingMode.present) {
+      map['tracking_mode'] = Variable<String>(trackingMode.value);
+    }
+    if (tierRequired.present) {
+      map['tier_required'] = Variable<String>(tierRequired.value);
+    }
+    if (exportedAt.present) {
+      map['exported_at'] = Variable<int>(exportedAt.value);
+    }
+    if (exportFormats.present) {
+      map['export_formats'] = Variable<String>(exportFormats.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SportHistoryMetaCompanion(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('sportType: $sportType, ')
+          ..write('trackingMode: $trackingMode, ')
+          ..write('tierRequired: $tierRequired, ')
+          ..write('exportedAt: $exportedAt, ')
+          ..write('exportFormats: $exportFormats')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SportGameNotesTable extends SportGameNotes
+    with TableInfo<$SportGameNotesTable, SportGameNote> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SportGameNotesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<int> sessionId = GeneratedColumn<int>(
+    'session_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'UNIQUE REFERENCES game_sessions (id)',
+    ),
+  );
+  static const VerificationMeta _contentMeta = const VerificationMeta(
+    'content',
+  );
+  @override
+  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+    'content',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, sessionId, content, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sport_game_notes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SportGameNote> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sessionIdMeta);
+    }
+    if (data.containsKey('content')) {
+      context.handle(
+        _contentMeta,
+        content.isAcceptableOrUnknown(data['content']!, _contentMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SportGameNote map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SportGameNote(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}session_id'],
+      )!,
+      content: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SportGameNotesTable createAlias(String alias) {
+    return $SportGameNotesTable(attachedDatabase, alias);
+  }
+}
+
+class SportGameNote extends DataClass implements Insertable<SportGameNote> {
+  final int id;
+
+  /// FK → [GameSessions.id]. UNIQUE — one notes row per game session.
+  final int sessionId;
+
+  /// Free-form note text. Empty string when no note has been entered.
+  final String content;
+
+  /// Unix timestamp (ms) of last edit.
+  final int updatedAt;
+  const SportGameNote({
+    required this.id,
+    required this.sessionId,
+    required this.content,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['session_id'] = Variable<int>(sessionId);
+    map['content'] = Variable<String>(content);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  SportGameNotesCompanion toCompanion(bool nullToAbsent) {
+    return SportGameNotesCompanion(
+      id: Value(id),
+      sessionId: Value(sessionId),
+      content: Value(content),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory SportGameNote.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SportGameNote(
+      id: serializer.fromJson<int>(json['id']),
+      sessionId: serializer.fromJson<int>(json['sessionId']),
+      content: serializer.fromJson<String>(json['content']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'sessionId': serializer.toJson<int>(sessionId),
+      'content': serializer.toJson<String>(content),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  SportGameNote copyWith({
+    int? id,
+    int? sessionId,
+    String? content,
+    int? updatedAt,
+  }) => SportGameNote(
+    id: id ?? this.id,
+    sessionId: sessionId ?? this.sessionId,
+    content: content ?? this.content,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  SportGameNote copyWithCompanion(SportGameNotesCompanion data) {
+    return SportGameNote(
+      id: data.id.present ? data.id.value : this.id,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      content: data.content.present ? data.content.value : this.content,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SportGameNote(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('content: $content, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, sessionId, content, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SportGameNote &&
+          other.id == this.id &&
+          other.sessionId == this.sessionId &&
+          other.content == this.content &&
+          other.updatedAt == this.updatedAt);
+}
+
+class SportGameNotesCompanion extends UpdateCompanion<SportGameNote> {
+  final Value<int> id;
+  final Value<int> sessionId;
+  final Value<String> content;
+  final Value<int> updatedAt;
+  const SportGameNotesCompanion({
+    this.id = const Value.absent(),
+    this.sessionId = const Value.absent(),
+    this.content = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  SportGameNotesCompanion.insert({
+    this.id = const Value.absent(),
+    required int sessionId,
+    this.content = const Value.absent(),
+    required int updatedAt,
+  }) : sessionId = Value(sessionId),
+       updatedAt = Value(updatedAt);
+  static Insertable<SportGameNote> custom({
+    Expression<int>? id,
+    Expression<int>? sessionId,
+    Expression<String>? content,
+    Expression<int>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (sessionId != null) 'session_id': sessionId,
+      if (content != null) 'content': content,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  SportGameNotesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? sessionId,
+    Value<String>? content,
+    Value<int>? updatedAt,
+  }) {
+    return SportGameNotesCompanion(
+      id: id ?? this.id,
+      sessionId: sessionId ?? this.sessionId,
+      content: content ?? this.content,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (sessionId.present) {
+      map['session_id'] = Variable<int>(sessionId.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SportGameNotesCompanion(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('content: $content, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2214,6 +3013,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $HistoryRecordsTable historyRecords = $HistoryRecordsTable(this);
   late final $NotepadEntriesTable notepadEntries = $NotepadEntriesTable(this);
   late final $TallyCountersTable tallyCounters = $TallyCountersTable(this);
+  late final $SportHistoryMetaTable sportHistoryMeta = $SportHistoryMetaTable(
+    this,
+  );
+  late final $SportGameNotesTable sportGameNotes = $SportGameNotesTable(this);
   late final Index idxSessionsStatus = Index(
     'idx_sessions_status',
     'CREATE INDEX idx_sessions_status ON game_sessions (status)',
@@ -2250,9 +3053,19 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_history_player_names',
     'CREATE INDEX idx_history_player_names ON history_records (player_names)',
   );
+  late final Index idxSportMetaTier = Index(
+    'idx_sport_meta_tier',
+    'CREATE INDEX idx_sport_meta_tier ON sport_history_meta (tier_required)',
+  );
   late final SessionDao sessionDao = SessionDao(this as AppDatabase);
   late final HistoryDao historyDao = HistoryDao(this as AppDatabase);
   late final ToolsDao toolsDao = ToolsDao(this as AppDatabase);
+  late final SportHistoryDao sportHistoryDao = SportHistoryDao(
+    this as AppDatabase,
+  );
+  late final SportExportDao sportExportDao = SportExportDao(
+    this as AppDatabase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2263,6 +3076,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     historyRecords,
     notepadEntries,
     tallyCounters,
+    sportHistoryMeta,
+    sportGameNotes,
     idxSessionsStatus,
     idxSessionsGameTypeStatus,
     idxSessionsStartedAt,
@@ -2272,6 +3087,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     idxHistoryGameType,
     idxHistoryPlayedAt,
     idxHistoryPlayerNames,
+    idxSportMetaTier,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -2351,6 +3167,50 @@ final class $$GameSessionsTableReferences
     ).filter((f) => f.sessionId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_historyRecordsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$SportHistoryMetaTable, List<SportHistoryMetaData>>
+  _sportHistoryMetaRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.sportHistoryMeta,
+    aliasName: $_aliasNameGenerator(
+      db.gameSessions.id,
+      db.sportHistoryMeta.sessionId,
+    ),
+  );
+
+  $$SportHistoryMetaTableProcessedTableManager get sportHistoryMetaRefs {
+    final manager = $$SportHistoryMetaTableTableManager(
+      $_db,
+      $_db.sportHistoryMeta,
+    ).filter((f) => f.sessionId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _sportHistoryMetaRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$SportGameNotesTable, List<SportGameNote>>
+  _sportGameNotesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.sportGameNotes,
+    aliasName: $_aliasNameGenerator(
+      db.gameSessions.id,
+      db.sportGameNotes.sessionId,
+    ),
+  );
+
+  $$SportGameNotesTableProcessedTableManager get sportGameNotesRefs {
+    final manager = $$SportGameNotesTableTableManager(
+      $_db,
+      $_db.sportGameNotes,
+    ).filter((f) => f.sessionId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_sportGameNotesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -2452,6 +3312,56 @@ class $$GameSessionsTableFilterComposer
           }) => $$HistoryRecordsTableFilterComposer(
             $db: $db,
             $table: $db.historyRecords,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> sportHistoryMetaRefs(
+    Expression<bool> Function($$SportHistoryMetaTableFilterComposer f) f,
+  ) {
+    final $$SportHistoryMetaTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.sportHistoryMeta,
+      getReferencedColumn: (t) => t.sessionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SportHistoryMetaTableFilterComposer(
+            $db: $db,
+            $table: $db.sportHistoryMeta,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> sportGameNotesRefs(
+    Expression<bool> Function($$SportGameNotesTableFilterComposer f) f,
+  ) {
+    final $$SportGameNotesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.sportGameNotes,
+      getReferencedColumn: (t) => t.sessionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SportGameNotesTableFilterComposer(
+            $db: $db,
+            $table: $db.sportGameNotes,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2610,6 +3520,56 @@ class $$GameSessionsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> sportHistoryMetaRefs<T extends Object>(
+    Expression<T> Function($$SportHistoryMetaTableAnnotationComposer a) f,
+  ) {
+    final $$SportHistoryMetaTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.sportHistoryMeta,
+      getReferencedColumn: (t) => t.sessionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SportHistoryMetaTableAnnotationComposer(
+            $db: $db,
+            $table: $db.sportHistoryMeta,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> sportGameNotesRefs<T extends Object>(
+    Expression<T> Function($$SportGameNotesTableAnnotationComposer a) f,
+  ) {
+    final $$SportGameNotesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.sportGameNotes,
+      getReferencedColumn: (t) => t.sessionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SportGameNotesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.sportGameNotes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$GameSessionsTableTableManager
@@ -2628,6 +3588,8 @@ class $$GameSessionsTableTableManager
           PrefetchHooks Function({
             bool scoreEntriesRefs,
             bool historyRecordsRefs,
+            bool sportHistoryMetaRefs,
+            bool sportGameNotesRefs,
           })
         > {
   $$GameSessionsTableTableManager(_$AppDatabase db, $GameSessionsTable table)
@@ -2694,12 +3656,19 @@ class $$GameSessionsTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({scoreEntriesRefs = false, historyRecordsRefs = false}) {
+              ({
+                scoreEntriesRefs = false,
+                historyRecordsRefs = false,
+                sportHistoryMetaRefs = false,
+                sportGameNotesRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (scoreEntriesRefs) db.scoreEntries,
                     if (historyRecordsRefs) db.historyRecords,
+                    if (sportHistoryMetaRefs) db.sportHistoryMeta,
+                    if (sportGameNotesRefs) db.sportGameNotes,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -2746,6 +3715,48 @@ class $$GameSessionsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (sportHistoryMetaRefs)
+                        await $_getPrefetchedData<
+                          GameSession,
+                          $GameSessionsTable,
+                          SportHistoryMetaData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GameSessionsTableReferences
+                              ._sportHistoryMetaRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GameSessionsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).sportHistoryMetaRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.sessionId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (sportGameNotesRefs)
+                        await $_getPrefetchedData<
+                          GameSession,
+                          $GameSessionsTable,
+                          SportGameNote
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GameSessionsTableReferences
+                              ._sportGameNotesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GameSessionsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).sportGameNotesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.sessionId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -2766,7 +3777,12 @@ typedef $$GameSessionsTableProcessedTableManager =
       $$GameSessionsTableUpdateCompanionBuilder,
       (GameSession, $$GameSessionsTableReferences),
       GameSession,
-      PrefetchHooks Function({bool scoreEntriesRefs, bool historyRecordsRefs})
+      PrefetchHooks Function({
+        bool scoreEntriesRefs,
+        bool historyRecordsRefs,
+        bool sportHistoryMetaRefs,
+        bool sportGameNotesRefs,
+      })
     >;
 typedef $$ScoreEntriesTableCreateCompanionBuilder =
     ScoreEntriesCompanion Function({
@@ -3881,6 +4897,679 @@ typedef $$TallyCountersTableProcessedTableManager =
       TallyCounter,
       PrefetchHooks Function()
     >;
+typedef $$SportHistoryMetaTableCreateCompanionBuilder =
+    SportHistoryMetaCompanion Function({
+      Value<int> id,
+      required int sessionId,
+      required String sportType,
+      required String trackingMode,
+      required String tierRequired,
+      Value<int?> exportedAt,
+      Value<String?> exportFormats,
+    });
+typedef $$SportHistoryMetaTableUpdateCompanionBuilder =
+    SportHistoryMetaCompanion Function({
+      Value<int> id,
+      Value<int> sessionId,
+      Value<String> sportType,
+      Value<String> trackingMode,
+      Value<String> tierRequired,
+      Value<int?> exportedAt,
+      Value<String?> exportFormats,
+    });
+
+final class $$SportHistoryMetaTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $SportHistoryMetaTable,
+          SportHistoryMetaData
+        > {
+  $$SportHistoryMetaTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $GameSessionsTable _sessionIdTable(_$AppDatabase db) =>
+      db.gameSessions.createAlias(
+        $_aliasNameGenerator(db.sportHistoryMeta.sessionId, db.gameSessions.id),
+      );
+
+  $$GameSessionsTableProcessedTableManager get sessionId {
+    final $_column = $_itemColumn<int>('session_id')!;
+
+    final manager = $$GameSessionsTableTableManager(
+      $_db,
+      $_db.gameSessions,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sessionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$SportHistoryMetaTableFilterComposer
+    extends Composer<_$AppDatabase, $SportHistoryMetaTable> {
+  $$SportHistoryMetaTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sportType => $composableBuilder(
+    column: $table.sportType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get trackingMode => $composableBuilder(
+    column: $table.trackingMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tierRequired => $composableBuilder(
+    column: $table.tierRequired,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get exportedAt => $composableBuilder(
+    column: $table.exportedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get exportFormats => $composableBuilder(
+    column: $table.exportFormats,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GameSessionsTableFilterComposer get sessionId {
+    final $$GameSessionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.gameSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GameSessionsTableFilterComposer(
+            $db: $db,
+            $table: $db.gameSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SportHistoryMetaTableOrderingComposer
+    extends Composer<_$AppDatabase, $SportHistoryMetaTable> {
+  $$SportHistoryMetaTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sportType => $composableBuilder(
+    column: $table.sportType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get trackingMode => $composableBuilder(
+    column: $table.trackingMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tierRequired => $composableBuilder(
+    column: $table.tierRequired,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get exportedAt => $composableBuilder(
+    column: $table.exportedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get exportFormats => $composableBuilder(
+    column: $table.exportFormats,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GameSessionsTableOrderingComposer get sessionId {
+    final $$GameSessionsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.gameSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GameSessionsTableOrderingComposer(
+            $db: $db,
+            $table: $db.gameSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SportHistoryMetaTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SportHistoryMetaTable> {
+  $$SportHistoryMetaTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get sportType =>
+      $composableBuilder(column: $table.sportType, builder: (column) => column);
+
+  GeneratedColumn<String> get trackingMode => $composableBuilder(
+    column: $table.trackingMode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get tierRequired => $composableBuilder(
+    column: $table.tierRequired,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get exportedAt => $composableBuilder(
+    column: $table.exportedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get exportFormats => $composableBuilder(
+    column: $table.exportFormats,
+    builder: (column) => column,
+  );
+
+  $$GameSessionsTableAnnotationComposer get sessionId {
+    final $$GameSessionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.gameSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GameSessionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.gameSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SportHistoryMetaTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SportHistoryMetaTable,
+          SportHistoryMetaData,
+          $$SportHistoryMetaTableFilterComposer,
+          $$SportHistoryMetaTableOrderingComposer,
+          $$SportHistoryMetaTableAnnotationComposer,
+          $$SportHistoryMetaTableCreateCompanionBuilder,
+          $$SportHistoryMetaTableUpdateCompanionBuilder,
+          (SportHistoryMetaData, $$SportHistoryMetaTableReferences),
+          SportHistoryMetaData,
+          PrefetchHooks Function({bool sessionId})
+        > {
+  $$SportHistoryMetaTableTableManager(
+    _$AppDatabase db,
+    $SportHistoryMetaTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SportHistoryMetaTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SportHistoryMetaTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SportHistoryMetaTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> sessionId = const Value.absent(),
+                Value<String> sportType = const Value.absent(),
+                Value<String> trackingMode = const Value.absent(),
+                Value<String> tierRequired = const Value.absent(),
+                Value<int?> exportedAt = const Value.absent(),
+                Value<String?> exportFormats = const Value.absent(),
+              }) => SportHistoryMetaCompanion(
+                id: id,
+                sessionId: sessionId,
+                sportType: sportType,
+                trackingMode: trackingMode,
+                tierRequired: tierRequired,
+                exportedAt: exportedAt,
+                exportFormats: exportFormats,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int sessionId,
+                required String sportType,
+                required String trackingMode,
+                required String tierRequired,
+                Value<int?> exportedAt = const Value.absent(),
+                Value<String?> exportFormats = const Value.absent(),
+              }) => SportHistoryMetaCompanion.insert(
+                id: id,
+                sessionId: sessionId,
+                sportType: sportType,
+                trackingMode: trackingMode,
+                tierRequired: tierRequired,
+                exportedAt: exportedAt,
+                exportFormats: exportFormats,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$SportHistoryMetaTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({sessionId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (sessionId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.sessionId,
+                                referencedTable:
+                                    $$SportHistoryMetaTableReferences
+                                        ._sessionIdTable(db),
+                                referencedColumn:
+                                    $$SportHistoryMetaTableReferences
+                                        ._sessionIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$SportHistoryMetaTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SportHistoryMetaTable,
+      SportHistoryMetaData,
+      $$SportHistoryMetaTableFilterComposer,
+      $$SportHistoryMetaTableOrderingComposer,
+      $$SportHistoryMetaTableAnnotationComposer,
+      $$SportHistoryMetaTableCreateCompanionBuilder,
+      $$SportHistoryMetaTableUpdateCompanionBuilder,
+      (SportHistoryMetaData, $$SportHistoryMetaTableReferences),
+      SportHistoryMetaData,
+      PrefetchHooks Function({bool sessionId})
+    >;
+typedef $$SportGameNotesTableCreateCompanionBuilder =
+    SportGameNotesCompanion Function({
+      Value<int> id,
+      required int sessionId,
+      Value<String> content,
+      required int updatedAt,
+    });
+typedef $$SportGameNotesTableUpdateCompanionBuilder =
+    SportGameNotesCompanion Function({
+      Value<int> id,
+      Value<int> sessionId,
+      Value<String> content,
+      Value<int> updatedAt,
+    });
+
+final class $$SportGameNotesTableReferences
+    extends BaseReferences<_$AppDatabase, $SportGameNotesTable, SportGameNote> {
+  $$SportGameNotesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $GameSessionsTable _sessionIdTable(_$AppDatabase db) =>
+      db.gameSessions.createAlias(
+        $_aliasNameGenerator(db.sportGameNotes.sessionId, db.gameSessions.id),
+      );
+
+  $$GameSessionsTableProcessedTableManager get sessionId {
+    final $_column = $_itemColumn<int>('session_id')!;
+
+    final manager = $$GameSessionsTableTableManager(
+      $_db,
+      $_db.gameSessions,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sessionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$SportGameNotesTableFilterComposer
+    extends Composer<_$AppDatabase, $SportGameNotesTable> {
+  $$SportGameNotesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GameSessionsTableFilterComposer get sessionId {
+    final $$GameSessionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.gameSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GameSessionsTableFilterComposer(
+            $db: $db,
+            $table: $db.gameSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SportGameNotesTableOrderingComposer
+    extends Composer<_$AppDatabase, $SportGameNotesTable> {
+  $$SportGameNotesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GameSessionsTableOrderingComposer get sessionId {
+    final $$GameSessionsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.gameSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GameSessionsTableOrderingComposer(
+            $db: $db,
+            $table: $db.gameSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SportGameNotesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SportGameNotesTable> {
+  $$SportGameNotesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$GameSessionsTableAnnotationComposer get sessionId {
+    final $$GameSessionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.gameSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GameSessionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.gameSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SportGameNotesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SportGameNotesTable,
+          SportGameNote,
+          $$SportGameNotesTableFilterComposer,
+          $$SportGameNotesTableOrderingComposer,
+          $$SportGameNotesTableAnnotationComposer,
+          $$SportGameNotesTableCreateCompanionBuilder,
+          $$SportGameNotesTableUpdateCompanionBuilder,
+          (SportGameNote, $$SportGameNotesTableReferences),
+          SportGameNote,
+          PrefetchHooks Function({bool sessionId})
+        > {
+  $$SportGameNotesTableTableManager(
+    _$AppDatabase db,
+    $SportGameNotesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SportGameNotesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SportGameNotesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SportGameNotesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> sessionId = const Value.absent(),
+                Value<String> content = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+              }) => SportGameNotesCompanion(
+                id: id,
+                sessionId: sessionId,
+                content: content,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int sessionId,
+                Value<String> content = const Value.absent(),
+                required int updatedAt,
+              }) => SportGameNotesCompanion.insert(
+                id: id,
+                sessionId: sessionId,
+                content: content,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$SportGameNotesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({sessionId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (sessionId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.sessionId,
+                                referencedTable: $$SportGameNotesTableReferences
+                                    ._sessionIdTable(db),
+                                referencedColumn:
+                                    $$SportGameNotesTableReferences
+                                        ._sessionIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$SportGameNotesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SportGameNotesTable,
+      SportGameNote,
+      $$SportGameNotesTableFilterComposer,
+      $$SportGameNotesTableOrderingComposer,
+      $$SportGameNotesTableAnnotationComposer,
+      $$SportGameNotesTableCreateCompanionBuilder,
+      $$SportGameNotesTableUpdateCompanionBuilder,
+      (SportGameNote, $$SportGameNotesTableReferences),
+      SportGameNote,
+      PrefetchHooks Function({bool sessionId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3895,4 +5584,8 @@ class $AppDatabaseManager {
       $$NotepadEntriesTableTableManager(_db, _db.notepadEntries);
   $$TallyCountersTableTableManager get tallyCounters =>
       $$TallyCountersTableTableManager(_db, _db.tallyCounters);
+  $$SportHistoryMetaTableTableManager get sportHistoryMeta =>
+      $$SportHistoryMetaTableTableManager(_db, _db.sportHistoryMeta);
+  $$SportGameNotesTableTableManager get sportGameNotes =>
+      $$SportGameNotesTableTableManager(_db, _db.sportGameNotes);
 }

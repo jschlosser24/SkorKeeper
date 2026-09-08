@@ -6,7 +6,11 @@ import 'package:go_router/go_router.dart';
 import '../../../core/monetization/monetized_banner.dart';
 import '../../../core/modules/game_module.dart';
 import '../../../core/modules/game_module_registry.dart';
+import '../../../core/modules/sport_enums.dart';
 import '../../../core/providers/active_sessions_provider.dart';
+import '../../modules/shared/sport_module_utils.dart';
+import '../../sports_hub/application/sports_entitlement_notifier.dart';
+import '../../sports_hub/presentation/sports_purchase_sheet.dart';
 import '../../../ui/theme/color_tokens.dart';
 
 // -- Game groups ------------------------------------------------------------
@@ -60,6 +64,22 @@ const _groups = [
       'uno',
     ],
   ),
+  // Sports is kept last so it always appears at the bottom of the list.
+  _GameGroup(
+    title: 'Sports',
+    icon: Icons.sports_baseball_rounded,
+    color: Color(0xFFCF5C36),
+    gameTypeIds: [
+      'sport_baseball',
+      'sport_basketball',
+      'sport_football',
+      'sport_soccer',
+      'sport_tennis',
+      'sport_volleyball',
+      'sport_hockey',
+      'sport_lacrosse',
+    ],
+  ),
 ];
 
 // -- Screen -----------------------------------------------------------------
@@ -82,7 +102,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _showWelcomeIfNeeded();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('SkorKeeper')),
+      appBar: AppBar(
+        title: const Text('SkorKeeper'),
+      ),
       bottomNavigationBar: const MonetizedBanner(),
       body: activeSessions.when(
         data: (sessions) {
@@ -225,16 +247,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
 // -- Module list tile --------------------------------------------------------
 
-class _GameModuleListTile extends StatelessWidget {
+class _GameModuleListTile extends ConsumerWidget {
   const _GameModuleListTile({required this.module});
 
   final GameModule module;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
+    final entitlement = ref.watch(sportsEntitlementNotifierProvider).valueOrNull;
+    final isSport = module.gameTypeId.startsWith('sport_');
+    final sport = isSport
+        ? SportType.values.firstWhere(
+            (value) => value.gameTypeId == module.gameTypeId,
+          )
+        : null;
+    final locked = sport != null && !(entitlement?.canAccess(sport) ?? false);
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+      leading: sport == null
+          ? null
+          : CircleAvatar(
+              backgroundColor: colorScheme.primaryContainer,
+              child: Icon(
+                SportModuleUtils.iconForSport(sport),
+                color: colorScheme.onPrimaryContainer,
+              ),
+            ),
       title: Text(
         module.displayName,
         style: Theme.of(context).textTheme.titleSmall,
@@ -261,10 +300,26 @@ class _GameModuleListTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const Icon(Icons.chevron_right),
+          Icon(locked ? Icons.lock_outline : Icons.chevron_right),
         ],
       ),
-      onTap: () => GoRouter.of(context).go('/home/new/${module.gameTypeId}'),
+      onTap: () {
+        if (sport == null) {
+          GoRouter.of(context).go('/home/new/${module.gameTypeId}');
+          return;
+        }
+        if (locked) {
+          showSportsPurchaseSheet(
+            context,
+            tier: sport.requiresPro
+                ? SportsPurchaseTier.sportsPro
+                : SportsPurchaseTier.sportsPlan,
+            showUpgradePitch: sport.requiresPro,
+          );
+          return;
+        }
+        GoRouter.of(context).go('/sports/${sport.name}/setup');
+      },
     );
   }
 }

@@ -11,6 +11,8 @@ import '../../core/monetization/sound_pack_catalog.dart';
 import '../../core/monetization/theme_catalog.dart';
 import '../../core/providers/preferences_provider.dart';
 import '../../core/providers/pro_state_provider.dart';
+import '../sports_hub/application/sports_entitlement_notifier.dart';
+import '../sports_hub/presentation/sports_purchase_sheet.dart';
 import 'pro_purchase_sheet.dart';
 import 'tip_jar_sheet.dart';
 
@@ -34,6 +36,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget build(BuildContext context) {
     final preferences = ref.watch(preferencesNotifierProvider);
     final isPro = ref.watch(proStateNotifierProvider).valueOrNull ?? false;
+    final sportsEntitlement =
+        ref.watch(sportsEntitlementNotifierProvider).valueOrNull;
+    final hasSportsPlan = sportsEntitlement?.hasSportsPlan ?? false;
+    final hasSportsPro = sportsEntitlement?.hasSportsPro ?? false;
     final notifier = ref.read(preferencesNotifierProvider.notifier);
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
@@ -73,6 +79,56 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: const Text('Get Pro'),
                 ),
               ),
+            const _SectionHeader('Sports'),
+            ListTile(
+              leading: Icon(
+                hasSportsPlan ? Icons.sports_baseball : Icons.sports_baseball_outlined,
+                color: Theme.of(context).colorScheme.tertiary,
+              ),
+              title: const Text('Sports Plan'),
+              subtitle: Text(
+                hasSportsPlan
+                    ? 'Active — 8 sports modules, timers, and notes unlocked'
+                    : 'Baseball, Basketball, Football, Soccer, Tennis, Volleyball, Hockey, Lacrosse',
+              ),
+              trailing: hasSportsPlan
+                  ? Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.tertiary,
+                    )
+                  : FilledButton(
+                      onPressed: () => showSportsPurchaseSheet(
+                        context,
+                        tier: SportsPurchaseTier.sportsPlan,
+                      ),
+                      child: const Text('Get Plan'),
+                    ),
+            ),
+            ListTile(
+              leading: Icon(
+                hasSportsPro ? Icons.workspace_premium : Icons.workspace_premium_outlined,
+                color: Theme.of(context).colorScheme.tertiary,
+              ),
+              title: const Text('Sports Pro'),
+              subtitle: Text(
+                hasSportsPro
+                    ? 'Active — in-depth tracking, export, and analytics unlocked'
+                    : 'In-depth tracking, export to PDF/CSV/JSON, season analytics',
+              ),
+              trailing: hasSportsPro
+                  ? Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.tertiary,
+                    )
+                  : FilledButton(
+                      onPressed: () => showSportsPurchaseSheet(
+                        context,
+                        tier: SportsPurchaseTier.sportsPro,
+                        showUpgradePitch: hasSportsPlan,
+                      ),
+                      child: const Text('Get Pro'),
+                    ),
+            ),
             const _SectionHeader('Support the Developer'),
             ListTile(
               leading: const Text('❤️', style: TextStyle(fontSize: 22)),

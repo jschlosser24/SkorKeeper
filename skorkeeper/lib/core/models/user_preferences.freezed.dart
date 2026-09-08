@@ -39,6 +39,8 @@ int get hashCode => Object.hash(runtimeType,themeMode,soundEnabled,hapticEnabled
 String toString() {
   return 'UserPreferences(themeMode: $themeMode, soundEnabled: $soundEnabled, hapticEnabled: $hapticEnabled, shakeToRollEnabled: $shakeToRollEnabled, shakeSensitivity: $shakeSensitivity, defaultPlayerNames: $defaultPlayerNames, defaultPlayerColors: $defaultPlayerColors, selectedThemeId: $selectedThemeId)';
 }
+
+
 }
 
 /// @nodoc
@@ -214,7 +216,7 @@ return $default(_that.themeMode,_that.soundEnabled,_that.hapticEnabled,_that.sha
 @JsonSerializable()
 
 class _UserPreferences implements UserPreferences {
-  const _UserPreferences({this.themeMode = ThemeMode.system, this.soundEnabled = true, this.hapticEnabled = true, this.shakeToRollEnabled = true, this.shakeSensitivity = 15.0, final  List<String> defaultPlayerNames = const <String>[], final  List<String> defaultPlayerColors = const <String>[], this.selectedThemeId = 'midnightWolves'}): _defaultPlayerNames = defaultPlayerNames, _defaultPlayerColors = defaultPlayerColors;
+  const _UserPreferences({this.themeMode = ThemeMode.system, this.soundEnabled = true, this.hapticEnabled = true, this.shakeToRollEnabled = true, this.shakeSensitivity = 15.0, final  List<String> defaultPlayerNames = const <String>[], final  List<String> defaultPlayerColors = const <String>[], this.selectedThemeId = 'midnightWolves'}): _defaultPlayerNames = defaultPlayerNames,_defaultPlayerColors = defaultPlayerColors;
   factory _UserPreferences.fromJson(Map<String, dynamic> json) => _$UserPreferencesFromJson(json);
 
 @override@JsonKey() final  ThemeMode themeMode;

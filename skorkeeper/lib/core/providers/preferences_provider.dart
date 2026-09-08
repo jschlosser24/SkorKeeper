@@ -32,8 +32,6 @@ class PreferencesNotifier extends _$PreferencesNotifier {
     final colors = List<String>.from(jsonDecode(colorsJson) as List<dynamic>);
     final selectedThemeId =
         _prefs.getString(PrefsKeys.selectedThemeId) ?? 'midnightWolves';
-    final soundPackId =
-        _prefs.getString(PrefsKeys.soundPackId) ?? 'classic';
     return UserPreferences(
       themeMode: themeMode,
       soundEnabled: _prefs.getBool(PrefsKeys.soundEnabled) ?? true,

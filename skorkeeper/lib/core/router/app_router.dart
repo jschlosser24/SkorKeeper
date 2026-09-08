@@ -1,21 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../features/history/history_detail_screen.dart';
 import '../../features/history/history_list_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/modules/baseball/presentation/baseball_game_screen.dart';
+import '../../features/modules/baseball/presentation/baseball_setup_screen.dart';
+import '../../features/modules/basketball/presentation/basketball_game_screen.dart';
+import '../../features/modules/basketball/presentation/basketball_setup_screen.dart';
 import '../../features/modules/bowling/presentation/bowling_setup_screen.dart';
-import '../../features/modules/dominoes/presentation/dominoes_setup_screen.dart';
+import '../../features/modules/cribbage/presentation/cribbage_setup_screen.dart';
 import '../../features/modules/custom/presentation/custom_setup_screen.dart';
 import '../../features/modules/darts/presentation/darts_setup_screen.dart';
 import '../../features/modules/darts/presentation/darts_variant_picker_screen.dart';
+import '../../features/modules/dominoes/presentation/dominoes_setup_screen.dart';
 import '../../features/modules/farkle/presentation/farkle_setup_screen.dart';
+import '../../features/modules/football/presentation/football_game_screen.dart';
+import '../../features/modules/football/presentation/football_setup_screen.dart';
 import '../../features/modules/golf/presentation/golf_setup_screen.dart';
+import '../../features/modules/hockey/presentation/hockey_game_screen.dart';
+import '../../features/modules/hockey/presentation/hockey_setup_screen.dart';
+import '../../features/modules/lacrosse/presentation/lacrosse_game_screen.dart';
+import '../../features/modules/lacrosse/presentation/lacrosse_setup_screen.dart';
+import '../../features/modules/soccer/presentation/soccer_game_screen.dart';
+import '../../features/modules/soccer/presentation/soccer_setup_screen.dart';
+import '../../features/modules/tennis/presentation/tennis_game_screen.dart';
+import '../../features/modules/tennis/presentation/tennis_setup_screen.dart';
 import '../../features/modules/uno/presentation/uno_setup_screen.dart';
+import '../../features/modules/volleyball/presentation/volleyball_game_screen.dart';
+import '../../features/modules/volleyball/presentation/volleyball_setup_screen.dart';
 import '../../features/modules/yahtzee/presentation/yahtzee_setup_screen.dart';
-import '../../features/modules/cribbage/presentation/cribbage_setup_screen.dart';
 import '../../features/settings/faq_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/settings/theme_picker_screen.dart';
@@ -23,6 +38,11 @@ import '../../features/settings/updates_screen.dart';
 import '../../features/shared_session/game_session_scaffold.dart';
 import '../../features/shared_session/session_setup_scaffold.dart';
 import '../../features/shared_session/session_summary_screen.dart';
+import '../../features/sports_analytics/presentation/analytics_dashboard_screen.dart';
+import '../../features/sports_history/presentation/sports_history_screen.dart';
+import '../../features/sports_hub/application/sports_entitlement_notifier.dart';
+import '../../features/sports_hub/presentation/sports_hub_screen.dart';
+import '../../features/sports_hub/presentation/sports_purchase_sheet.dart';
 import '../../features/tools/coin/coin_flip_screen.dart';
 import '../../features/tools/dice/dice_roller_screen.dart';
 import '../../features/tools/lives/lives_counter_screen.dart';
@@ -40,12 +60,9 @@ import '../providers/active_sessions_provider.dart';
 import '../providers/database_provider.dart';
 import '../providers/preferences_provider.dart';
 
-part 'app_router.g.dart';
-
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-@Riverpod(keepAlive: true)
-GoRouter appRouter(Ref ref) {
+final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/home',
@@ -61,16 +78,20 @@ GoRouter appRouter(Ref ref) {
         final session = await database.sessionDao.getSession(sessionId);
         if (path.startsWith('/history/')) {
           if (session == null) {
-            final history = await database.historyDao.getHistoryRecord(
-              sessionId,
-            );
+            final history = await database.historyDao.getHistoryRecord(sessionId);
             return history == null ? '/home' : null;
           }
           if (session.status != 1) {
-            return '/home/session/' + sessionId.toString();
+            return '/home/session/$sessionId';
           }
         } else if (session == null) {
           return '/home';
+        }
+      }
+      if (path == '/sports/analytics') {
+        final entitlement = ref.read(sportsEntitlementNotifierProvider).valueOrNull;
+        if (entitlement != null && !entitlement.hasSportsPro) {
+          return '/sports/purchase?tier=pro&upgrade=true';
         }
       }
       return null;
@@ -96,8 +117,7 @@ GoRouter appRouter(Ref ref) {
                     pageBuilder: (context, state) => _slideUpPage(
                       state,
                       _SetupRouteScreen(
-                        gameTypeId:
-                            state.pathParameters['gameTypeId'] ?? 'custom',
+                        gameTypeId: state.pathParameters['gameTypeId'] ?? 'custom',
                       ),
                     ),
                   ),
@@ -106,9 +126,7 @@ GoRouter appRouter(Ref ref) {
                     pageBuilder: (context, state) => _slideUpPage(
                       state,
                       GameSessionScaffold(
-                        sessionId: int.parse(
-                          state.pathParameters['sessionId']!,
-                        ),
+                        sessionId: int.parse(state.pathParameters['sessionId']!),
                       ),
                     ),
                     routes: [
@@ -117,9 +135,7 @@ GoRouter appRouter(Ref ref) {
                         pageBuilder: (context, state) => _fadePage(
                           state,
                           SessionSummaryScreen(
-                            sessionId: int.parse(
-                              state.pathParameters['sessionId']!,
-                            ),
+                            sessionId: int.parse(state.pathParameters['sessionId']!),
                           ),
                         ),
                       ),
@@ -206,9 +222,7 @@ GoRouter appRouter(Ref ref) {
                     pageBuilder: (context, state) => _slideRightPage(
                       state,
                       HistoryDetailScreen(
-                        sessionId: int.parse(
-                          state.pathParameters['sessionId']!,
-                        ),
+                        sessionId: int.parse(state.pathParameters['sessionId']!),
                       ),
                     ),
                   ),
@@ -243,9 +257,45 @@ GoRouter appRouter(Ref ref) {
           ),
         ],
       ),
+      GoRoute(
+        path: '/sports',
+        builder: (context, state) => const SportsHubScreen(),
+        routes: [
+          GoRoute(
+            path: 'purchase',
+            builder: (context, state) => SportsPurchaseScreen(
+              tier: state.uri.queryParameters['tier'] == 'pro'
+                  ? SportsPurchaseTier.sportsPro
+                  : SportsPurchaseTier.sportsPlan,
+              showUpgradePitch: state.uri.queryParameters['upgrade'] == 'true',
+            ),
+          ),
+          GoRoute(
+            path: ':sport/setup',
+            builder: (context, state) => _SportSetupRouteScreen(
+              sport: state.pathParameters['sport'] ?? 'baseball',
+            ),
+          ),
+          GoRoute(
+            path: ':sport/game',
+            builder: (context, state) => _SportGameRouteScreen(
+              sport: state.pathParameters['sport'] ?? 'baseball',
+              sessionId: int.tryParse(state.uri.queryParameters['sessionId'] ?? '') ?? 0,
+            ),
+          ),
+          GoRoute(
+            path: 'history',
+            builder: (context, state) => const SportsHistoryScreen(),
+          ),
+          GoRoute(
+            path: 'analytics',
+            builder: (context, state) => const AnalyticsDashboardScreen(),
+          ),
+        ],
+      ),
     ],
   );
-}
+});
 
 CustomTransitionPage<void> _slideUpPage(GoRouterState state, Widget child) {
   return CustomTransitionPage<void>(
@@ -335,14 +385,12 @@ class _SetupRouteScreen extends ConsumerWidget {
     if (module == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Unknown game')),
-        body: Center(child: Text('No module found for ' + gameTypeId)),
+        body: Center(child: Text('No module found for $gameTypeId')),
       );
     }
     final preferences = ref.watch(preferencesNotifierProvider);
-    final names =
-        preferences.valueOrNull?.defaultPlayerNames ?? const <String>[];
-    final colors =
-        preferences.valueOrNull?.defaultPlayerColors ?? const <String>[];
+    final names = preferences.valueOrNull?.defaultPlayerNames ?? const <String>[];
+    final colors = preferences.valueOrNull?.defaultPlayerColors ?? const <String>[];
     return SessionSetupScaffold(
       module: module,
       initialPlayerNames: names,
@@ -357,9 +405,99 @@ class _SetupRouteScreen extends ConsumerWidget {
               initialModuleState: module.initialState(result.players),
             );
         if (context.mounted) {
-          context.go('/home/session/' + sessionId.toString());
+          context.go('/home/session/$sessionId');
         }
       },
     );
   }
 }
+
+class _SportSetupRouteScreen extends StatelessWidget {
+  const _SportSetupRouteScreen({required this.sport});
+
+  final String sport;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        // The sports setup screens are reached via the top-level `/sports`
+        // route rather than the bottom-nav shell, so a default pop would
+        // land on the Sports hub — a dead end with no way back. Send the
+        // user back to the games tab instead.
+        context.go('/home');
+      },
+      child: _buildSetupScreen(),
+    );
+  }
+
+  Widget _buildSetupScreen() {
+    switch (sport) {
+      case 'baseball':
+        return const BaseballSetupScreen();
+      case 'basketball':
+        return const BasketballSetupScreen();
+      case 'football':
+        return const FootballSetupScreen();
+      case 'soccer':
+        return const SoccerSetupScreen();
+      case 'tennis':
+        return const TennisSetupScreen();
+      case 'volleyball':
+        return const VolleyballSetupScreen();
+      case 'hockey':
+        return const HockeySetupScreen();
+      case 'lacrosse':
+        return const LacrosseSetupScreen();
+      default:
+        return const BaseballSetupScreen();
+    }
+  }
+}
+
+class _SportGameRouteScreen extends StatelessWidget {
+  const _SportGameRouteScreen({required this.sport, required this.sessionId});
+
+  final String sport;
+  final int sessionId;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        // Same dead-end concern as setup: pop back to the games tab rather
+        // than the unreachable Sports hub screen.
+        context.go('/home');
+      },
+      child: _buildGameScreen(),
+    );
+  }
+
+  Widget _buildGameScreen() {
+    switch (sport) {
+      case 'baseball':
+        return BaseballGameScreen(sessionId: sessionId);
+      case 'basketball':
+        return BasketballGameScreen(sessionId: sessionId);
+      case 'football':
+        return FootballGameScreen(sessionId: sessionId);
+      case 'soccer':
+        return SoccerGameScreen(sessionId: sessionId);
+      case 'tennis':
+        return TennisGameScreen(sessionId: sessionId);
+      case 'volleyball':
+        return VolleyballGameScreen(sessionId: sessionId);
+      case 'hockey':
+        return HockeyGameScreen(sessionId: sessionId);
+      case 'lacrosse':
+        return LacrosseGameScreen(sessionId: sessionId);
+      default:
+        return BaseballGameScreen(sessionId: sessionId);
+    }
+  }
+}
+

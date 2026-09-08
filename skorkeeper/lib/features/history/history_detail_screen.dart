@@ -11,6 +11,7 @@ import '../../core/modules/game_module.dart';
 import '../../core/modules/game_module_registry.dart';
 import '../../core/modules/leaderboard_entry.dart';
 import '../../core/modules/scoring_layout_descriptor.dart';
+import '../../core/modules/sport_game_state.dart';
 import '../../core/providers/database_provider.dart';
 import '../../core/providers/history_provider.dart';
 import '../../features/modules/bowling/domain/bowling_state.dart';
@@ -391,7 +392,132 @@ class _ReadOnlyScoringView extends StatelessWidget {
         scoreEntries: scoreEntries,
       );
     }
+    if (state is SportGameState) {
+      return _SportSnapshot(state: state);
+    }
     return _FallbackSnapshotCard(rawStateJson: rawStateJson);
+  }
+}
+
+class _SportSnapshot extends StatelessWidget {
+  const _SportSnapshot({required this.state});
+
+  final SportGameState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final periodLabel = _periodLabel(state);
+    final teamCards = <Widget>[];
+    final teams = [state.homeTeam, state.awayTeam];
+
+    for (final team in teams) {
+      final stats = <String>[];
+      for (final entry in team.stats.entries) {
+        final key = entry.key;
+        final value = entry.value;
+        if (key == 'periodScores' || key == 'inningScores' || key == 'setScores') {
+          continue;
+        }
+        if (value is List || value is Map) {
+          continue;
+        }
+        final label = _humanizeKey(key);
+        final displayValue = value is bool ? (value ? 'Yes' : 'No') : '$value';
+        stats.add('$label: $displayValue');
+      }
+      teamCards.add(
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        team.name,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                    Text(
+                      '${team.score}',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ],
+                ),
+                if (stats.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  ...stats.map((line) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(line),
+                      )),
+                ],
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  state.sportType.displayName,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                if (periodLabel.isNotEmpty)
+                  Text('Stage: $periodLabel'),
+                Text(
+                  'Final score: ${state.homeTeam.name} ${state.homeTeam.score} - ${state.awayTeam.score} ${state.awayTeam.name}',
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        ...teamCards,
+      ],
+    );
+  }
+
+  String _periodLabel(SportGameState state) {
+    const labels = {
+      'currentPeriod': 'Period',
+      'currentQuarter': 'Quarter',
+      'currentHalf': 'Half',
+      'currentSet': 'Set',
+    };
+    for (final key in ['currentPeriod', 'currentQuarter', 'currentHalf', 'currentSet']) {
+      final value = state.sportSpecific[key];
+      if (value != null) {
+        return '${labels[key]} ${value.toString()}';
+      }
+    }
+    return '';
+  }
+
+  /// Converts a camelCase stat key (e.g. `setsWon`) into a human-readable
+  /// label (e.g. `Sets Won`) for display in the sport history summary.
+  static String _humanizeKey(String key) {
+    final withSpaces = key
+        .replaceAllMapped(
+          RegExp(r'([a-z0-9])([A-Z])'),
+          (match) => '${match.group(1)} ${match.group(2)}',
+        )
+        .replaceAll('_', ' ');
+    final words = withSpaces.split(' ').where((w) => w.isNotEmpty);
+    return words
+        .map((w) => w[0].toUpperCase() + w.substring(1))
+        .join(' ');
   }
 }
 

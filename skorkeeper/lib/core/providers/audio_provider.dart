@@ -1,10 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'preferences_provider.dart';
-import 'prefs_keys.dart';
 import '../monetization/sound_pack_catalog.dart';
 
 part 'audio_provider.g.dart';
@@ -36,6 +34,10 @@ class AudioService {
   Future<void> playTimerAlert() async => _play(_timerAlertPlayer);
   Future<void> playScoreConfirm() async => _play(_scoreConfirmPlayer);
   Future<void> playBust() async => _play(_bustPlayer);
+
+  /// Plays the end-of-period/buzzer sound for countdown sport clocks
+  /// (basketball, football, hockey, lacrosse). Reuses the timer alert asset.
+  Future<void> playBuzzer() async => _play(_timerAlertPlayer);
 
   Future<void> _play(AudioPlayer player) async {
     if (!_isSoundEnabled()) {

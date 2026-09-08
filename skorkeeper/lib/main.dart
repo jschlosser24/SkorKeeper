@@ -30,6 +30,7 @@ import 'features/modules/darts/domain/darts_shanghai_module.dart';
 import 'features/modules/farkle/domain/farkle_module.dart';
 import 'features/modules/golf/domain/golf_module.dart';
 import 'features/modules/cribbage/domain/cribbage_module.dart';
+import 'features/modules/sports_module_registrar.dart';
 import 'features/modules/uno/domain/uno_module.dart';
 import 'features/modules/yahtzee/domain/yahtzee_module.dart';
 import 'ui/theme/app_theme.dart';
@@ -37,10 +38,15 @@ import 'ui/theme/app_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   _registerModules();
-  await Future.wait<void>([
-    PurchaseService.configure().catchError((Object _) {}),
-    AdService.instance.initialize().catchError((Object _) {}),
-  ]);
+  try {
+    await PurchaseService.configure();
+  } catch (_) {}
+  try {
+    await PurchaseService.restoreSportsPurchases();
+  } catch (_) {}
+  try {
+    await AdService.instance.initialize();
+  } catch (_) {}
   developer.Timeline.startSync('AppDatabase.open');
   final database = AppDatabase();
   try {
@@ -103,6 +109,7 @@ void _registerModules() {
   for (final gameType in GameType.values) {
     assert(GameModuleRegistry.get(gameType.name) != null);
   }
+  registerSportsModules();
 }
 
 class SkorKeeperApp extends ConsumerWidget {

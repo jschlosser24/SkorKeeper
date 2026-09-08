@@ -204,6 +204,8 @@ class _GameSessionScaffoldState extends ConsumerState<GameSessionScaffold> {
       case ScoringLayoutType.cribbageBoard:
       case ScoringLayoutType.bowlingSheet:
       case ScoringLayoutType.livesCounter:
+      case ScoringLayoutType.sportsBasic:
+      case ScoringLayoutType.sportsInDepth:
         return NumericKeypad(
           title: 'Score for ' + selectedPlayer.displayName,
           onSubmitted: (value) =>

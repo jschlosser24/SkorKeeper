@@ -10,6 +10,14 @@ enum ScoringLayoutType {
   cribbageBoard,
   bowlingSheet,
   livesCounter,
+
+  /// Sports layout with team scores, optional period/inning counter, and a
+  /// sport-specific action button grid. Unlocked by the Sports Plan tier.
+  sportsBasic,
+
+  /// Sports layout that adds player-level stat attribution, in-depth event
+  /// tracking, and advanced metrics. Requires the Sports Pro tier.
+  sportsInDepth,
 }
 
 @freezed

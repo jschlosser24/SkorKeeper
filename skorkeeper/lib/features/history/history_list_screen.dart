@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -10,9 +9,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/database/app_database.dart';
+import '../../core/modules/sport_enums.dart';
 import '../../core/monetization/monetized_banner.dart';
 import '../../core/providers/history_provider.dart';
 import '../../core/providers/pro_state_provider.dart';
+import '../modules/shared/sport_module_utils.dart';
 
 enum _SortOption {
   newestFirst,
@@ -26,8 +27,7 @@ enum _SortOption {
         return 'Newest first';
       case _SortOption.oldestFirst:
         return 'Oldest first';
-      case _SortOption.gameTypeAZ,
-          :
+      case _SortOption.gameTypeAZ:
         return 'Game type (A–Z)';
       case _SortOption.winnerAZ:
         return 'Winner (A–Z)';
@@ -495,11 +495,10 @@ class _HistoryListScreenState extends ConsumerState<HistoryListScreen> {
         subject: 'SkorKeeper History',
       );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Export failed: $e')),
-        );
-      }
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Export failed: $e')),
+      );
     }
   }
 
@@ -592,6 +591,19 @@ class _HistoryTile extends StatelessWidget {
         return Icons.sports_rounded;
       case 'dominoes':
         return Icons.grid_view_rounded;
+      case 'sport_baseball':
+      case 'sport_basketball':
+      case 'sport_football':
+      case 'sport_soccer':
+      case 'sport_tennis':
+      case 'sport_volleyball':
+      case 'sport_hockey':
+      case 'sport_lacrosse':
+        final sport = SportType.values.firstWhere(
+          (value) => value.gameTypeId == gameType,
+          orElse: () => SportType.baseball,
+        );
+        return SportModuleUtils.iconForSport(sport);
       default:
         return Icons.sports_esports_rounded;
     }

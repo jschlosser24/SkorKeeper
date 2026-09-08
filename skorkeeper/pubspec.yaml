@@ -36,6 +36,7 @@ dependencies:
   connectivity_plus: ^7.3.1
   app_tracking_transparency: ^2.0.7
   share_plus: ^10.1.4
+  pdf: ^3.10.0
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +53,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/icons/
     - assets/animations/
     - assets/sounds/classic/
     - assets/sounds/arcade/

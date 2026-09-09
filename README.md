@@ -12,6 +12,7 @@ Available on **iOS** and **Android**. Works fully offline. No account required.
 | Document | Description |
 |----------|-------------|
 | [App README](skorkeeper/README.md) | Setup, build, run, and project structure |
+| [Publishing Checklist](PUBLISHING.md) | Everything needed to ship to Google Play (and later, iOS) |
 | [Feature Spec](specs/001-skorkeeper-app/spec.md) | Full product requirements and user stories |
 | [Implementation Plan](specs/001-skorkeeper-app/plan.md) | Architecture decisions and phased build plan |
 | [Tasks](specs/001-skorkeeper-app/tasks.md) | Ordered implementation task list |

@@ -138,6 +138,51 @@ flutter build apk --release
 flutter build ipa --release
 ```
 
+### Update the app icon
+
+The launcher icon is generated from `assets/icons/SkorKeeper Logo.png` via the
+`flutter_launcher_icons` package (config lives in `pubspec.yaml`). After replacing that image
+file with a new logo, run the combined refresh script from the `skorkeeper/` folder:
+
+```bash
+chmod +x ./scripts/refresh-icon.sh   # only needed once
+./scripts/refresh-icon.sh
+```
+
+This does everything needed in one shot: regenerates the icon files for Android/iOS,
+uninstalls the app from the connected device (Android launchers cache icons and often won't
+show a new one otherwise), does a clean rebuild, and installs the fresh release APK.
+
+**Manual steps**, if you'd rather run them individually or need to troubleshoot:
+
+```bash
+# 1. Regenerate icon files from assets/icons/SkorKeeper Logo.png
+flutter pub get
+dart run flutter_launcher_icons
+
+# 2. Force-refresh the icon on a connected Android device
+adb uninstall com.schlosserstudio.skorkeeper
+flutter clean
+flutter pub get
+flutter build apk --release
+adb install build/app/outputs/flutter-apk/app-release.apk
+```
+
+If `adb` isn't on your PATH, it's typically at `~/Library/Android/sdk/platform-tools/adb`
+(macOS) or `~/Android/Sdk/platform-tools/adb` (Linux).
+
+---
+
+## Useful adb commands (Android)
+
+```bash
+adb devices                                  # list connected devices/emulators
+adb uninstall com.schlosserstudio.skorkeeper      # remove the app entirely
+adb install <path-to.apk>                    # install an APK on the connected device
+adb logcat *:E                               # stream device logs (errors only)
+adb shell pm clear com.schlosserstudio.skorkeeper # wipe app data/prefs without uninstalling
+```
+
 ---
 
 ## Project Structure

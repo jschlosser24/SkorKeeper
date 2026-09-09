@@ -46,3 +46,8 @@ app.*.map.json
 
 # Kotlin compiler cache
 android/.kotlin/
+
+# Release signing (never commit real secrets)
+android/key.properties
+*.jks
+*.keystore

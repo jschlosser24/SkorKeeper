@@ -1,0 +1,6 @@
+# Copy this file to `key.properties` (same folder) and fill in your real values.
+# `key.properties` is gitignored — never commit your real passwords or keystore path.
+storePassword=REPLACE_WITH_KEYSTORE_PASSWORD
+keyPassword=REPLACE_WITH_KEY_PASSWORD
+keyAlias=skorkeeper
+storeFile=C:\\Users\\jschl\\skorkeeper-release.jks

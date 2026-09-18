@@ -129,7 +129,13 @@ dart format lib/ test/
 ### Build release APK (Android)
 
 ```bash
-flutter build apk --release
+flutter build apk --release --dart-define=REVENUECAT_ANDROID_KEY=goog_your_android_public_sdk_key --dart-define=REVENUECAT_IOS_KEY=appl_your_ios_public_sdk_key
+```
+
+### Build release App Bundle (Android store upload)
+
+```bash
+flutter build appbundle --release --dart-define=REVENUECAT_ANDROID_KEY=goog_your_android_public_sdk_key --dart-define=REVENUECAT_IOS_KEY=appl_your_ios_public_sdk_key
 ```
 
 ### Build release IPA (iOS — Mac only)

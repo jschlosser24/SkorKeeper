@@ -21,10 +21,12 @@ abstract class PurchaseKeys {
   /// One-time IAP product ID for Sports Pro ($19.99).
   static const String productSportsPro = 'sports_pro_lifetime';
 
-  // Get these from RevenueCat Dashboard → Project Settings → API Keys
-  // Android key starts with "goog_", iOS key starts with "appl_"
-  static const String androidApiKey = 'test_qKIGfqJdAhRGkgmKmMlqefYOQYR';
-  static const String iosApiKey = 'test_qKIGfqJdAhRGkgmKmMlqefYOQYR';
+  // Get these from RevenueCat Dashboard -> Project Settings -> API Keys.
+  // Inject them at build time with --dart-define to keep store keys out of git.
+  static const String androidApiKey = String.fromEnvironment(
+    'REVENUECAT_ANDROID_KEY',
+  );
+  static const String iosApiKey = String.fromEnvironment('REVENUECAT_IOS_KEY');
 
   // Consumable tip products — configure these as one-time, consumable
   // products in App Store Connect / Google Play Console and RevenueCat.
@@ -54,12 +56,17 @@ class PurchaseService {
     if (!_isSupportedPlatform) {
       return;
     }
+    final apiKey = defaultTargetPlatform == TargetPlatform.android
+        ? PurchaseKeys.androidApiKey
+        : PurchaseKeys.iosApiKey;
+    if (apiKey.isEmpty) {
+      throw StateError(
+        'Missing RevenueCat public SDK key for $defaultTargetPlatform. '
+        'Provide it with --dart-define.',
+      );
+    }
     await Purchases.setLogLevel(kDebugMode ? LogLevel.debug : LogLevel.error);
-    final config = PurchasesConfiguration(
-      defaultTargetPlatform == TargetPlatform.android
-          ? PurchaseKeys.androidApiKey
-          : PurchaseKeys.iosApiKey,
-    );
+    final config = PurchasesConfiguration(apiKey);
     await Purchases.configure(config);
   }
 

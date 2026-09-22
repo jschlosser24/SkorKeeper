@@ -55,7 +55,8 @@ class _SessionSetupScaffoldState extends State<SessionSetupScaffold> {
     _sessionNameController = TextEditingController(
       text: widget.initialSessionName,
     );
-    _playerControllers = List<TextEditingController>.generate(10, (index) {
+    _playerControllers = List<TextEditingController>.generate(
+        widget.module.maxPlayers, (index) {
       final initial = index < widget.initialPlayerNames.length
           ? widget.initialPlayerNames[index]
           : widget.participantSingularLabel + ' ' + (index + 1).toString();
@@ -150,8 +151,7 @@ class _SessionSetupScaffoldState extends State<SessionSetupScaffold> {
               ),
               Text(_playerCount.toString(), style: theme.textTheme.titleLarge),
               IconButton(
-                onPressed:
-                    _playerCount < widget.module.maxPlayers && _playerCount < 10
+                onPressed: _playerCount < widget.module.maxPlayers
                     ? () => setState(() => _playerCount++)
                     : null,
                 icon: const Icon(Icons.add_circle_outline),

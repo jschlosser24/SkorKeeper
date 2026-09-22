@@ -29,7 +29,7 @@ class CustomGameModule implements GameModule {
   int get minPlayers => 1;
 
   @override
-  int get maxPlayers => 10;
+  int get maxPlayers => 20;
 
   @override
   Map<String, dynamic> initialState(List<SessionPlayer> players) {

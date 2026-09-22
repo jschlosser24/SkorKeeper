@@ -82,6 +82,17 @@ const _groups = [
   ),
 ];
 
+/// Icons shown as logos for the Classic Games list, mirroring how the
+/// Sports list shows a per-game icon via [SportModuleUtils.iconForSport].
+const _classicGameIcons = <String, IconData>{
+  'yahtzee': Icons.casino_rounded,
+  'cribbage': Icons.grid_4x4_rounded,
+  'bowling': Icons.circle_rounded,
+  'farkle': Icons.casino_rounded,
+  'dominoes': Icons.view_module_rounded,
+  'uno': Icons.style_rounded,
+};
+
 // -- Screen -----------------------------------------------------------------
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -263,14 +274,18 @@ class _GameModuleListTile extends ConsumerWidget {
           )
         : null;
     final locked = sport != null && !(entitlement?.canAccess(sport) ?? false);
+    final classicIcon = _classicGameIcons[module.gameTypeId];
+    final logoIcon = sport != null
+        ? SportModuleUtils.iconForSport(sport)
+        : classicIcon;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
-      leading: sport == null
+      leading: logoIcon == null
           ? null
           : CircleAvatar(
               backgroundColor: colorScheme.primaryContainer,
               child: Icon(
-                SportModuleUtils.iconForSport(sport),
+                logoIcon,
                 color: colorScheme.onPrimaryContainer,
               ),
             ),

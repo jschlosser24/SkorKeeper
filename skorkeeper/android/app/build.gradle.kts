@@ -20,7 +20,7 @@ if (hasKeystoreProperties) {
 android {
     namespace = "com.schlosserstudio.skorkeeper"
     compileSdk = 36
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "28.0.13004108"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -66,6 +66,15 @@ android {
                 // for contributors who don't have android/key.properties set up.
                 signingConfigs.getByName("debug")
             }
+            // Enables R8 code shrinking/obfuscation and optimized resource shrinking
+            // (Play Console's "Optimized resource shrinking" check) to reduce APK/AAB
+            // size and memory footprint.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 }
